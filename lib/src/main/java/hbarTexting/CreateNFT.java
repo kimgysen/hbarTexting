@@ -206,6 +206,23 @@ public class CreateNFT {
 		return null;  	
     }
     
+    public static void listAccountNfts(Client client, AccountId accountId) throws TimeoutException, PrecheckStatusException
+    {
+	      //Check the new account's balance
+        AccountBalance accountBalance = new AccountBalanceQuery()
+             .setAccountId(accountId)
+             .execute(client);
+
+        for (TokenId tokenId:accountBalance.tokens.keySet())
+        {
+        	TokenInfo tokenInfo = new TokenInfoQuery()
+        		    .setTokenId(tokenId)
+        		    .execute(client);
+        	
+        	System.out.println(tokenInfo);
+        }
+    }
+    
     public static void createTrashAccount(Client client) throws TimeoutException, PrecheckStatusException, ReceiptStatusException
     {
     	// Generate a new key pair
@@ -244,9 +261,7 @@ public class CreateNFT {
         AccountId trashAccountId = AccountId.fromString(Dotenv.load().get("TRASH_ACCOUNT_ID"));
         PrivateKey trashPrivateKey = PrivateKey.fromString(Dotenv.load().get("TRASH_PRIVATE_KEY")); 
         
-        String trash_CID = "QmTzWcVfk88JRqjTpVwHzBeULRTNzHY7mnBSG42CpwHmPa";
-        
-        //Create your Hedera testnet client
+       //Create your Hedera testnet client
         Client client = Client.forTestnet();
         client.setOperator(myAccountId, myPrivateKey);
        
@@ -254,42 +269,98 @@ public class CreateNFT {
         System.out.println("Checking My Account balance:");
         AccountBalance myAccountBalance = checkBalance(client, myAccountId);
         
-        TokenId tokenId = (TokenId) myAccountBalance.tokens.keySet().toArray()[1];
-        
-        System.out.println(tokenId);
-        
-        
-        long minutes = 5;
-        long hours = 2;
-        Instant expirationTime = java.time.Instant.now()
-        		.plus(hours, ChronoUnit.HOURS)
-        		.plus(minutes, ChronoUnit.MINUTES);
-        
-        System.out.println(expirationTime.toString());
-        
-        //Define NFT characteristic Strings for minting
-        String CID = "QmQLiQ4QGY496wUopYyTDEFFWoGdzpkuCHgnNU9ji7tUPF";
-        String name = "Blues Tetra Quantum Annihilation";
-        String symbol = "BTFG";
-        
-
-        createAndMintNftfromCid(client, myAccountId, myPrivateKey, myPublicKey, name, symbol, CID); 
-        
         
         System.out.println("Checking My Account balance:");
         myAccountBalance = checkBalance(client, myAccountId);
+       
+ /***************************
+ *
+ *    START testing area
+ *         
+ ****************/
+ 
+       // listAccountNfts(client, myAccountId);
         
-    	TokenInfo tokenInfo = new TokenInfoQuery()
-    		    .setTokenId(tokenId)
-    		    .execute(client);
-    	
-    	System.out.println(tokenInfo);
+  if (true)
+  {
+	  
+	  TokenId tokenId = TokenId.fromString("0.0.34366200");
+	  
+	  //associateNftToAccount(client, tokenId, kimAccountId, myPublicKey );
+	  
+	  
+      //Create a transaction to schedule
+        TransferTransaction transaction = new TransferTransaction()
+    	        .addNftTransfer( new NftId(tokenId, 1), myAccountId, kimAccountId);
+        
+      //Schedule a transaction
+        TransactionResponse scheduleTransaction = new ScheduleCreateTransaction()
+             .setScheduledTransaction(transaction)
+             .execute(client);
+
+        //Get the receipt of the transaction
+        TransactionReceipt receipt = scheduleTransaction.getReceipt(client);
+             
+        //Get the schedule ID
+        ScheduleId scheduleId = receipt.scheduleId;
+        System.out.println("The schedule ID is " +scheduleId);
+
+        //Get the scheduled transaction ID
+        TransactionId scheduledTxId = receipt.scheduledTransactionId;
+        System.out.println("The scheduled transaction ID is " +scheduledTxId);
+        
+      //Submit the first signatures
+        TransactionResponse signature1 = new ScheduleSignTransaction()
+             .setScheduleId(scheduleId)
+             .freezeWith(client)
+             .sign(myPrivateKey)
+             .execute(client);
+             
+        //Verify the transaction was successful and submit a schedule info request
+        TransactionReceipt receipt1 = signature1.getReceipt(client);
+        System.out.println("The transaction status is " +receipt1.status);
+
+        ScheduleInfo query1 = new ScheduleInfoQuery()
+             .setScheduleId(scheduleId)
+             .execute(client);
+
+        //Confirm the signature was added to the schedule  
+        System.out.println(query1);
+        
+        
+      //Submit the second signature
+        TransactionResponse signature2 = new ScheduleSignTransaction()
+             .setScheduleId(scheduleId)
+             .freezeWith(client)
+             .sign(trashPrivateKey)
+             .execute(client);
+             
+        //Verify the transaction was successful
+        TransactionReceipt receipt2 = signature2.getReceipt(client);
+        System.out.println("The transaction status" +receipt2.status);
+        
+        
+      //Get the schedule info
+        ScheduleInfo query2 = new ScheduleInfoQuery()
+            .setScheduleId(scheduleId)
+            .execute(client);
+            
+        System.out.println(query2);
+        
+      //Get the scheduled transaction record
+        TransactionRecord scheduledTxRecord = TransactionId.fromString(scheduledTxId.toString()).getRecord(client);
+        System.out.println("The scheduled transaction record is: " +scheduledTxRecord);
+
+ }     
+        
+ /***************************
+ *
+ *   END testing area
+ *         
+ ****************/
         
         System.out.println("Checking Trash balance:");
         myAccountBalance = checkBalance(client, trashAccountId);
-
-        System.out.println("Checking Kim balance:");
-        myAccountBalance = checkBalance(client, kimAccountId);
 
         
     }
