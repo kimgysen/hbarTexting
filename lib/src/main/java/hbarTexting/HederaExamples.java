@@ -79,11 +79,6 @@ public class HederaExamples {
     	
     	//AccountId newAccountID  = createNewAccount(client);
         
-        /*
-        AccountId newAccountID = AccountId.fromString("0.0.34319243");
-        
-
-    	*/
         
         AccountId kimAccountId = AccountId.fromString(Dotenv.load().get("KIM_ACCOUNT_ID"));
         System.out.println("Kim Account ID: "+kimAccountId);
@@ -94,7 +89,7 @@ public class HederaExamples {
         System.out.println("Checking Transfer Account balance:");
     	checkBalance(client, kimAccountId);
     	
-    	transferHbar(client, myAccountId, kimAccountId, 10000000);
+    	transferHbar(client, myAccountId, kimAccountId, 1000);
     	
     	checkBalance(client, kimAccountId);
         
