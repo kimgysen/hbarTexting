@@ -269,9 +269,6 @@ public class CreateNFT {
         System.out.println("Checking My Account balance:");
         AccountBalance myAccountBalance = checkBalance(client, myAccountId);
         
-        
-        System.out.println("Checking My Account balance:");
-        myAccountBalance = checkBalance(client, myAccountId);
        
  /***************************
  *
@@ -279,9 +276,9 @@ public class CreateNFT {
  *         
  ****************/
  
-       // listAccountNfts(client, myAccountId);
+       listAccountNfts(client, kimAccountId);
         
-  if (true)
+  if (false)
   {
 	  
 	  TokenId tokenId = TokenId.fromString("0.0.34366200");
