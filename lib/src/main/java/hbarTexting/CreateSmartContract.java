@@ -33,7 +33,7 @@ public class CreateSmartContract
 	    Gson gson = new Gson();
 	    JsonObject jsonObject;
 
-	    InputStream jsonStream = CreateSmartContract.class.getClassLoader().getResourceAsStream("HelloHedera.json");
+	    InputStream jsonStream = CreateSmartContract.class.getClassLoader().getResourceAsStream(jsonFilename);
 	    jsonObject = gson.fromJson(new InputStreamReader(jsonStream, StandardCharsets.UTF_8), JsonObject.class);
 
 	    //Store the "object" field from the HelloHedera.json file as hex-encoded bytecode
