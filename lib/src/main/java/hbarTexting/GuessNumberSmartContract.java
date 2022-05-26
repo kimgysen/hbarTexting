@@ -3,7 +3,10 @@ package hbarTexting;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 
 import com.google.gson.Gson;
@@ -66,7 +69,7 @@ public class GuessNumberSmartContract {
 	}
 	
 	
-	public static ContractId createGuessNumberContract(Client client, FileId bytecodeFileId, int secretNumber, String lower, String equal, String higher) throws TimeoutException, PrecheckStatusException, ReceiptStatusException
+	public static ContractId deployContract(Client client, FileId bytecodeFileId, ContractFunctionParameters constructorParameters) throws TimeoutException, PrecheckStatusException, ReceiptStatusException
 	{
 		
 		 // Instantiate the contract instance
@@ -76,11 +79,7 @@ public class GuessNumberSmartContract {
 	         //Set the gas to instantiate the contract
 	         .setGas(1000_000)
 	         //Provide the constructor parameters for the contract
-	         .setConstructorParameters(new ContractFunctionParameters()
-	        		 							.addUint32(secretNumber)
-	        		 							.addString(lower)
-	        		 							.addString(equal)
-	        		 							.addString(higher));
+	         .setConstructorParameters(constructorParameters);
 
 	   //Submit the transaction to the Hedera test network
 	   TransactionResponse contractResponse = contractTx.execute(client);
@@ -102,7 +101,7 @@ public class GuessNumberSmartContract {
 	         //Set the contract ID to return the request for
 	         .setContractId(contractId)
 	         //Set the function of the contract to call 
-	         .setFunction("guess", new ContractFunctionParameters().addUint32(guess))
+	         .setFunction("guess", new ContractFunctionParameters().addUint256(new BigInteger(""+guess)))
 	         //Set the query payment for the node returning the request
 	         //This value must cover the cost of the request otherwise will fail 
 	         .setQueryPayment(new Hbar(4)); 
@@ -115,71 +114,7 @@ public class GuessNumberSmartContract {
 	}
 	
 	
-	public static String sayHello(Client client, ContractId contractId) throws TimeoutException, PrecheckStatusException
-	{
-		 // Calls a function of the smart contract
-	    ContractCallQuery contractQuery = new ContractCallQuery()
-	         //Set the gas for the query
-	         .setGas(100000) 
-	         //Set the contract ID to return the request for
-	         .setContractId(contractId)
-	         //Set the function of the contract to call 
-	         .setFunction("hello", new ContractFunctionParameters())
-	         //Set the query payment for the node returning the request
-	         //This value must cover the cost of the request otherwise will fail 
-	         .setQueryPayment(new Hbar(2)); 
-
-	    //Submit to a Hedera network
-	    ContractFunctionResult getMessage = contractQuery.execute(client);
-
-		
-		return getMessage.getString(0);
-	}
-	
-	
-	public static String getLower(Client client, ContractId contractId) throws TimeoutException, PrecheckStatusException
-	{
-		 // Calls a function of the smart contract
-	    ContractCallQuery contractQuery = new ContractCallQuery()
-	         //Set the gas for the query
-	         .setGas(100000) 
-	         //Set the contract ID to return the request for
-	         .setContractId(contractId)
-	         //Set the function of the contract to call 
-	         .setFunction("lower", new ContractFunctionParameters())
-	         //Set the query payment for the node returning the request
-	         //This value must cover the cost of the request otherwise will fail 
-	         .setQueryPayment(new Hbar(2)); 
-
-	    //Submit to a Hedera network
-	    ContractFunctionResult getMessage = contractQuery.execute(client);
-
-		
-		return getMessage.getString(0);
-	}
-	
-	public static int cheat(Client client, ContractId contractId) throws TimeoutException, PrecheckStatusException
-	{
-		 // Calls a function of the smart contract
-	    ContractCallQuery contractQuery = new ContractCallQuery()
-	         //Set the gas for the query
-	         .setGas(100000) 
-	         //Set the contract ID to return the request for
-	         .setContractId(contractId)
-	         //Set the function of the contract to call 
-	         .setFunction("secret", new ContractFunctionParameters())
-	         //Set the query payment for the node returning the request
-	         //This value must cover the cost of the request otherwise will fail 
-	         .setQueryPayment(new Hbar(2)); 
-
-	    //Submit to a Hedera network
-	    ContractFunctionResult getMessage = contractQuery.execute(client);
-	
-		return getMessage.getInt32(0);
-	}
-	
-	
-	public static void main(String[] args) throws TimeoutException, PrecheckStatusException, ReceiptStatusException
+	public static void main(String[] args) throws Exception
 	{
 		//Grab your Hedera testnet account ID and private key
 		AccountId kimAccountId = AccountId.fromString(Dotenv.load().get("KIM_ACCOUNT_ID"));
@@ -201,43 +136,40 @@ public class GuessNumberSmartContract {
 		 *         
 		 ****************/
     
-		//Import the compiled contract from the *.json file
+		//1 Deploy Contract
+		/*
 		byte[] bytecode = retrieveBytecodeFromJson("GuessNumber.json");
 		System.out.println(bytecode);  
    
-
-		//Get the file ID from the receipt
 		FileId bytecodeFileId = loadBytecodeToHederaFile(client, bytecode);
-		//Log the file ID
 		System.out.println("The smart contract bytecode file ID is " +bytecodeFileId);
-
-		/*The bytecode file ID is 0.0.34382461*/
-		//FileId bytecodeFileId = FileId.fromString("0.0.34382461");
     
-
-		ContractId contractId = createGuessNumberContract(client, bytecodeFileId, 5, "Trop petit", "Bravo!! C'est gagné", "Trop grand");
-		//Log the smart contract ID
-		//ContractId contractId = ContractId.fromString("0.0.34382608");
+		int secretNumber = 5;
+		ContractId contractId = deployContract(client, bytecodeFileId, new ContractFunctionParameters().addUint32(secretNumber));
+		System.out.println("The contract ID is:"+contractId);
+		 */
 		
 		/***************************
 		 *
 		 *  Play Number Guessing Game
 		 *         
 		 ****************/
+
+		//Log the smart contract ID
+		ContractId contractId = ContractId.fromString("0.0.34910840");
 		
-		String message = sayHello(client, contractId);
+		System.out.println("The contract ID is:"+contractId);
+		
+		String message = tryNumberGuess(client, contractId, 2); 
 		System.out.println("query result: " + message);
 		
-		 message = getLower(client, contractId);
-		System.out.println("query result: " + message);
-		
-		int secret = cheat(client, contractId);
-		System.out.println("query result: " + secret);
-		
-		  message = tryNumberGuess(client, contractId, 2); // this  crashes, I dont know why???
+		message = tryNumberGuess(client, contractId, 5); 
 		System.out.println("query result: " + message);
 
-    
+		message = tryNumberGuess(client, contractId, 6); 
+		System.out.println("query result: " + message);
+
+
 		/***************************
 		 *
 		 *   END testing area
