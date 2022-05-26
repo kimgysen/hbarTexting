@@ -6,29 +6,27 @@ contract GuessNumber {
     address owner;
     
     // the secret number to guess
-    uint secret_number;
+    uint private secret_number;
 
     // the messages we're storing
-    string message_lower;
-    string message_equal;
-    string message_higher;
+    string[] message = ["too low...", "Yep!! that is it ;)", "Too hign ..."]; 
 
 
-    constructor  (uint secret_number_, string memory message_lower_, string memory message_equal_, string memory message_higher_)  
+    constructor  (uint secret_number_)  
     {
         // set the owner of the contract for 'kill()'
         owner = msg.sender;
         secret_number = secret_number_;
-        message_lower = message_lower_;
-        message_equal = message_equal_;
-        message_higher = message_higher_;
     }
 
     function guess(uint number_) public view returns (string memory) {
         // only allow the owner to update the message
-        if (number_  < secret_number)  return message_lower;
-        if (number_ == secret_number)  return message_equal;
-        if (number_  >  secret_number) return message_higher;        
+        string memory ret = "";
+        if (number_  < secret_number)  ret =  message[0];
+        if (number_ == secret_number)  ret =  message[1];
+        if (number_  >  secret_number) ret =  message[2];
+
+        return ret;        
     }
 
 
