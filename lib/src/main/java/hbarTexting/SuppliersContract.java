@@ -119,10 +119,10 @@ public class SuppliersContract
 	
 	
 	public void addSupplier(ContractId contractId, String solidityAddress, String email) 
-			throws TimeoutException, PrecheckStatusException
+			throws TimeoutException, PrecheckStatusException, ReceiptStatusException
 	{
 		 // Calls a function of the smart contract
-	    ContractCallQuery contractQuery = new ContractCallQuery()
+		ContractExecuteTransaction transaction = new ContractExecuteTransaction()
 	         //Set the gas for the query
 	         .setGas(1000_000) 
 	         //Set the contract ID to return the request for
@@ -131,11 +131,36 @@ public class SuppliersContract
 	         .setFunction("addSupplier", new ContractFunctionParameters().addAddress(solidityAddress).addString(email))
 	         //Set the query payment for the node returning the request
 	         //This value must cover the cost of the request otherwise will fail 
-	         .setQueryPayment(new Hbar(2)); 
+	        ; 
+
+	    //Submit to a Hedera network
+	    TransactionResponse response = transaction.execute(client);
+	    
+	    TransactionReceipt receipt = response.getReceipt(client);
+	    
+	    System.out.println("The transaction consensus status is " +receipt.status);
+		
+	}
+	
+	public boolean validateSupplier(ContractId contractId, String email) throws TimeoutException, PrecheckStatusException
+	{
+		 // Calls a function of the smart contract
+	    ContractCallQuery contractQuery = new ContractCallQuery()
+	         //Set the gas for the query
+	         .setGas(1000_000) 
+	         //Set the contract ID to return the request for
+	         .setContractId(contractId)
+	         //Set the function of the contract to call 
+	         .setFunction("validateSupplier", new ContractFunctionParameters().addString(email))
+	         //Set the query payment for the node returning the request
+	         //This value must cover the cost of the request otherwise will fail 
+	         .setQueryPayment(new Hbar(1)); 
 
 	    //Submit to a Hedera network
 	    ContractFunctionResult getMessage = contractQuery.execute(client);
+
 		
+		return getMessage.getBool(0);
 	}
 
 	
@@ -173,11 +198,18 @@ public class SuppliersContract
     ContractId clientContractId = ContractId.fromString(Dotenv.load().get("CLIENT1_CONTRACT_ID"));
     System.out.println("The smart contract ID is " + clientContractId);
     
-    String supplier1SolidityAddress = AccountId.fromString(Dotenv.load().get("SUPPLIER1_ACCOUNT_ID")).toSolidityAddress();
-    String email = "supplier1@mail.com";
+    String supplier1SolidityAddress = AccountId.fromString(Dotenv.load().get("SUPPLIER3_ACCOUNT_ID")).toSolidityAddress();
+    String email = "supplier3@mail.com";
 
-    sp.addSupplier(clientContractId, supplier1SolidityAddress, email);
+    //sp.addSupplier(clientContractId, supplier1SolidityAddress, email);
+    
+    boolean success = sp.validateSupplier(clientContractId, email);
 
+    System.out.println(""+success);
+    
+    success = sp.validateSupplier(clientContractId, "nobody@mail.com");
+    
+    System.out.println(""+success);
     
     /***************************
     *
