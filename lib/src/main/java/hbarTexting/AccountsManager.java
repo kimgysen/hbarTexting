@@ -60,7 +60,7 @@ public class AccountsManager {
 	}
 
 	// append a string to the end of the file
-	private static void storeAccountVariable(String content) throws IOException {
+	static void storeAccountVariable(String content) throws IOException {
 		FileUtils.writeStringToFile(accounts, content+"\n" , StandardCharsets.UTF_8, true);
 	}
 	
@@ -79,7 +79,7 @@ public class AccountsManager {
         //createNewAccount(client, "SUPPLIER1");
         //createNewAccount(client, "SUPPLIER2");
         
-        createNewAccount(client, "SUPPLIER3");
+        //createNewAccount(client, "SUPPLIER3");
 		
 	}
 	
