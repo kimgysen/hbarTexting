@@ -2,8 +2,10 @@ package hbarTexting;
 
 
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeoutException;
 
@@ -11,11 +13,35 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.hedera.hashgraph.sdk.*;
 import io.github.cdimascio.dotenv.Dotenv;
+import hbarTexting.AccountsManager;
+
+
 
 public class SuppliersContract 
 {
 	
-	public static AccountBalance checkBalance(Client client, AccountId newAccountId) throws TimeoutException, PrecheckStatusException
+	private String rootName = null;
+	private AccountId  clientAccountId = null;
+	private PrivateKey clientPrivateKey = null;
+	private PublicKey  clientPublicKey = null;
+	private Client client = null;
+	
+	public SuppliersContract(String rootName_)
+	{
+		rootName = rootName_;
+		clientAccountId = AccountId.fromString(Dotenv.load().get(rootName+"_ACCOUNT_ID"));
+		clientPrivateKey = PrivateKey.fromString(Dotenv.load().get(rootName+"_PRIVATE_KEY"));
+		clientPublicKey = PublicKey.fromString(Dotenv.load().get(rootName+"_PUBLIC_KEY"));
+		
+		System.out.println(clientAccountId);
+		
+		
+	    client = Client.forTestnet();
+	    client.setOperator(clientAccountId, clientPrivateKey);
+		
+	}
+	
+	public AccountBalance checkBalance(AccountId newAccountId) throws TimeoutException, PrecheckStatusException
 	{
 	      //Check the new account's balance
         AccountBalance accountBalance = new AccountBalanceQuery()
@@ -70,7 +96,7 @@ public class SuppliersContract
 		return bytecodeFileId;
 	}
 	
-	public static ContractId createSmartContract(Client client, FileId bytecodeFileId) throws TimeoutException, PrecheckStatusException, ReceiptStatusException
+	public static ContractId deploySmartContract(Client client, FileId bytecodeFileId) throws TimeoutException, PrecheckStatusException, ReceiptStatusException
 	{
 		
 		 // Instantiate the contract instance
@@ -86,72 +112,40 @@ public class SuppliersContract
 
 	   //Get the receipt of the file create transaction
 	   TransactionReceipt contractReceipt = contractResponse.getReceipt(client);
-
+	   
 	   //Get the smart contract ID
 		return  contractReceipt.contractId;
 	}
 	
-	public static String getContractMessage(Client client, ContractId contractId) throws TimeoutException, PrecheckStatusException
+	
+	public void addSupplier(ContractId contractId, String solidityAddress, String email) 
+			throws TimeoutException, PrecheckStatusException
 	{
 		 // Calls a function of the smart contract
 	    ContractCallQuery contractQuery = new ContractCallQuery()
 	         //Set the gas for the query
-	         .setGas(100000) 
+	         .setGas(1000_000) 
 	         //Set the contract ID to return the request for
 	         .setContractId(contractId)
 	         //Set the function of the contract to call 
-	         .setFunction("get_message" )
+	         .setFunction("addSupplier", new ContractFunctionParameters().addAddress(solidityAddress).addString(email))
 	         //Set the query payment for the node returning the request
 	         //This value must cover the cost of the request otherwise will fail 
 	         .setQueryPayment(new Hbar(2)); 
 
 	    //Submit to a Hedera network
 	    ContractFunctionResult getMessage = contractQuery.execute(client);
-
-		
-		return getMessage.getString(0);
-	}
-	
-	public static void setContractMessage(Client client, ContractId contractId, String message) throws TimeoutException, PrecheckStatusException, ReceiptStatusException
-	{
-		//Create the transaction to update the contract message
-		 ContractExecuteTransaction contractExecTx = new ContractExecuteTransaction()
-		        //Set the ID of the contract
-		        .setContractId(contractId)
-		        //Set the gas for the call
-		        .setGas(100_000)
-		        //Set the function of the contract to call
-		        .setFunction("set_message", new ContractFunctionParameters().addString(message));
-
-		//Submit the transaction to a Hedera network and store the response
-		TransactionResponse submitExecTx = contractExecTx.execute(client);
-
-		//Get the receipt of the transaction
-		TransactionReceipt receipt2 = submitExecTx.getReceipt(client);
-
-		//Confirm the transaction was executed successfully 
-		System.out.println("The transaction status is " +receipt2.status);
 		
 	}
+
 	
-	public static void main(String[] args) throws TimeoutException, PrecheckStatusException, ReceiptStatusException
+	public static void main(String[] args) throws TimeoutException, PrecheckStatusException, ReceiptStatusException, IOException
 	{
-    //Grab your Hedera testnet account ID and private key
-    AccountId kimAccountId = AccountId.fromString(Dotenv.load().get("KIM_ACCOUNT_ID"));
-    AccountId myAccountId = AccountId.fromString(Dotenv.load().get("MY_ACCOUNT_ID"));
-    PrivateKey myPrivateKey = PrivateKey.fromString(Dotenv.load().get("MY_PRIVATE_KEY")); 
-    PublicKey myPublicKey = myPrivateKey.getPublicKey();
+
+	SuppliersContract sp = new SuppliersContract("CLIENT1");
     
-    // grab trash account credentials
-    AccountId trashAccountId = AccountId.fromString(Dotenv.load().get("TRASH_ACCOUNT_ID"));
-    PrivateKey trashPrivateKey = PrivateKey.fromString(Dotenv.load().get("TRASH_PRIVATE_KEY")); 
-    
-   //Create your Hedera testnet client
-    Client client = Client.forTestnet();
-    client.setOperator(myAccountId, myPrivateKey);
-    
-    System.out.println("Checking My Account balance:");
-    AccountBalance myAccountBalance = checkBalance(client, myAccountId);
+    System.out.println("Checking client account balance:");
+    AccountBalance myAccountBalance = sp.checkBalance(sp.clientAccountId);
     
     /***************************
     *
@@ -159,34 +153,31 @@ public class SuppliersContract
     *         
     ****************/
     
-  //Import the compiled contract from the HelloHedera.json file
-    byte[] bytecode = retrieveBytecodeFromJson("BankContract.json");
+  //Deploy Client/Supplier smartContract
+/*
+   byte[] bytecode = retrieveBytecodeFromJson("Suppliers.json");
    
-
-    //Get the file ID from the receipt
-    //FileId bytecodeFileId = loadBytecodeToHederaFile(client, bytecode);
-    //System.out.println("The smart contract bytecode file ID is " +bytecodeFileId);
+   FileId bytecodeFileId = loadBytecodeToHederaFile(sp.client, bytecode);
+   System.out.println("The smart contract bytecode file ID is " +bytecodeFileId);
 
     
-    //FileId bytecodeFileId = FileId.fromString("0.0.45909545");
+   ContractId contractId = deploySmartContract(sp.client, bytecodeFileId);
+     
+   String accountVariable = sp.rootName.toUpperCase()+"_CONTRACT_ID=" +contractId;
+   System.out.println(accountVariable);
+   AccountsManager.storeAccountVariable(accountVariable);
+ */
+     
     
-    
-    //ContractId contractId = createSmartContract(client, bytecodeFileId);
-    /*The smart contract ID is 0.0.34376603*/
    //Log the smart contract ID
-    //ContractId contractId = ContractId.fromString("0.0.45909546");
-    //System.out.println("The smart contract ID is " + contractId);
-
- 
-    /*
-    String message = getContractMessage(client, contractId);
-
-    System.out.println("The contract message: " + message);
+    ContractId clientContractId = ContractId.fromString(Dotenv.load().get("CLIENT1_CONTRACT_ID"));
+    System.out.println("The smart contract ID is " + clientContractId);
     
-    setContractMessage(client, contractId, "Hello from Hedera again!!");
-    
-    System.out.println("The new contract message: " + getContractMessage(client, contractId));
-    */
+    String supplier1SolidityAddress = AccountId.fromString(Dotenv.load().get("SUPPLIER1_ACCOUNT_ID")).toSolidityAddress();
+    String email = "supplier1@mail.com";
+
+    sp.addSupplier(clientContractId, supplier1SolidityAddress, email);
+
     
     /***************************
     *
