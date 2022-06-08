@@ -202,6 +202,7 @@ public class SuppliersContract
     String email = "supplier3@mail.com";
 
     //sp.addSupplier(clientContractId, supplier1SolidityAddress, email);
+  
     
     boolean success = sp.validateSupplier(clientContractId, email);
 

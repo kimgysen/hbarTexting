@@ -80,22 +80,22 @@ public class HederaExamples {
     	//AccountId newAccountID  = createNewAccount(client);
         
         
-        AccountId kimAccountId = AccountId.fromString(Dotenv.load().get("KIM_ACCOUNT_ID"));
-        System.out.println("Kim Account ID: "+kimAccountId);
+        AccountId targetAccountId = AccountId.fromString(Dotenv.load().get("CLIENT1_ACCOUNT_ID"));
+        System.out.println("target Account ID: "+targetAccountId);
         
         System.out.println("Checking My Account balance:");
     	checkBalance(client, myAccountId);
 
-        System.out.println("Checking Transfer Account balance:");
-    	checkBalance(client, kimAccountId);
+        System.out.println("Checking Target Account balance:");
+    	checkBalance(client, targetAccountId);
     	
-    	transferHbar(client, myAccountId, kimAccountId, 1000);
+    	transferHbar(client, myAccountId, targetAccountId, 1000_000_000);
     	
-    	checkBalance(client, kimAccountId);
+    	checkBalance(client, targetAccountId);
         
-        AccountBalance kimAccountBalance = checkBalance(client, kimAccountId);
+        AccountBalance targetAccountBalance = checkBalance(client, targetAccountId);
         
-        for (TokenId tokenId:kimAccountBalance.tokens.keySet())
+        for (TokenId tokenId:targetAccountBalance.tokens.keySet())
         {
         	TokenInfo tokenInfo = new TokenInfoQuery()
         		    .setTokenId(tokenId)
