@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeoutException;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.hedera.hashgraph.sdk.*;
 import io.github.cdimascio.dotenv.Dotenv;
@@ -25,6 +26,8 @@ public class SuppliersContract
 	private PrivateKey clientPrivateKey = null;
 	private PublicKey  clientPublicKey = null;
 	private Client client = null;
+	
+	public static final FileId byteCodeFileId = FileId.fromString("0.0.45925852");
 	
 	public SuppliersContract(String rootName_)
 	{
@@ -164,13 +167,41 @@ public class SuppliersContract
 	}
 
 	
+	  public  boolean  isContractDeployed() throws IOException
+	  {
+		  	boolean ret = false;
+		  
+			System.out.println("retrieve account smart contract list:" + clientAccountId);
+			JsonObject json = JsonReader.readJsonFromUrl("https://testnet.mirrornode.hedera.com/api/v1/transactions/?account.id="+clientAccountId+"&transactionType=contractcreateinstance");
+		    JsonArray jarr = json.getAsJsonArray("transactions");
+
+		    
+		    for (int i=0; i<jarr.size(); i++)
+		    {
+		    	JsonObject jo = (JsonObject) jarr.get(i);
+		    	String contractStr = (""+jo.get("entity_id")).replace("\"", "");
+			    if (!contractStr.equals("null"))
+			    	{
+				    	// get file_id from contract_id
+			    		ContractId contractId = ContractId.fromString(contractStr);	    		
+					    json = JsonReader.readJsonFromUrl("https://testnet.mirrornode.hedera.com/api/v1/contracts/"+contractId);    
+					    FileId fileId = FileId.fromString((""+json.get("file_id")).replace("\"", ""));
+					    ret |=(fileId.equals(byteCodeFileId));
+			    	}
+		    }
+		      
+		  return ret;
+	  }
+	
 	public static void main(String[] args) throws TimeoutException, PrecheckStatusException, ReceiptStatusException, IOException
 	{
 
-	SuppliersContract sp = new SuppliersContract("CLIENT1");
+	SuppliersContract sp = new SuppliersContract("CLIENT2");
     
     System.out.println("Checking client account balance:");
-    AccountBalance myAccountBalance = sp.checkBalance(sp.clientAccountId);
+    AccountBalance accountBalance = sp.checkBalance(sp.clientAccountId);
+    
+    System.out.println("Checking contract deployment: "+sp.isContractDeployed());
     
     /***************************
     *
@@ -179,30 +210,22 @@ public class SuppliersContract
     ****************/
     
   //Deploy Client/Supplier smartContract
-/*
-   byte[] bytecode = retrieveBytecodeFromJson("Suppliers.json");
-   
-   FileId bytecodeFileId = loadBytecodeToHederaFile(sp.client, bytecode);
-   System.out.println("The smart contract bytecode file ID is " +bytecodeFileId);
 
-    
-   ContractId contractId = deploySmartContract(sp.client, bytecodeFileId);
-     
+
+    /*
+   ContractId contractId = deploySmartContract(sp.client, byteCodeFileId);
+
+        
    String accountVariable = sp.rootName.toUpperCase()+"_CONTRACT_ID=" +contractId;
    System.out.println(accountVariable);
    AccountsManager.storeAccountVariable(accountVariable);
- */
-     
-    
-   //Log the smart contract ID
+ 
+ 
     ContractId clientContractId = ContractId.fromString(Dotenv.load().get("CLIENT1_CONTRACT_ID"));
     System.out.println("The smart contract ID is " + clientContractId);
     
     String supplier1SolidityAddress = AccountId.fromString(Dotenv.load().get("SUPPLIER3_ACCOUNT_ID")).toSolidityAddress();
-    String email = "supplier3@mail.com";
-
-    //sp.addSupplier(clientContractId, supplier1SolidityAddress, email);
-  
+    String email = "supplier3@mail.com"; 
     
     boolean success = sp.validateSupplier(clientContractId, email);
 
@@ -211,6 +234,8 @@ public class SuppliersContract
     success = sp.validateSupplier(clientContractId, "nobody@mail.com");
     
     System.out.println(""+success);
+ */
+    
     
     /***************************
     *
