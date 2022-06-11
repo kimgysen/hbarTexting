@@ -25,11 +25,20 @@ public class SuppliersContract
 	private AccountId  clientAccountId = null;
 	private PrivateKey clientPrivateKey = null;
 	private PublicKey  clientPublicKey = null;
+	private ContractId clientContractId = null;
 	private Client client = null;
-	
+
 	public static final FileId byteCodeFileId = FileId.fromString("0.0.45925852");
+
 	
-	public SuppliersContract(String rootName_)
+	public String toString()
+	{
+		return  "AccountID  = " + clientAccountId + "\n" +
+				"ContractID = " + clientContractId + "\n"
+		;
+	}
+	
+	public SuppliersContract(String rootName_) throws IOException, TimeoutException, PrecheckStatusException, ReceiptStatusException
 	{
 		rootName = rootName_;
 		clientAccountId = AccountId.fromString(Dotenv.load().get(rootName+"_ACCOUNT_ID"));
@@ -38,9 +47,12 @@ public class SuppliersContract
 		
 		System.out.println(clientAccountId);
 		
-		
 	    client = Client.forTestnet();
 	    client.setOperator(clientAccountId, clientPrivateKey);
+		
+		clientContractId = getContractId();
+		
+		if (null==clientContractId) clientContractId = deploySmartContract();
 		
 	}
 	
@@ -99,13 +111,15 @@ public class SuppliersContract
 		return bytecodeFileId;
 	}
 	
-	public static ContractId deploySmartContract(Client client, FileId bytecodeFileId) throws TimeoutException, PrecheckStatusException, ReceiptStatusException
+	public ContractId deploySmartContract() throws TimeoutException, PrecheckStatusException, ReceiptStatusException
 	{
+		
+		System.out.println("Deploying Smart Contract...");
 		
 		 // Instantiate the contract instance
 	    ContractCreateTransaction contractTx = new ContractCreateTransaction()
 	         //Set the file ID of the Hedera file storing the bytecode
-	         .setBytecodeFileId(bytecodeFileId)
+	         .setBytecodeFileId(byteCodeFileId)
 	         //Set the gas to instantiate the contract
 	         .setGas(100_000)
 	         ;
@@ -192,16 +206,44 @@ public class SuppliersContract
 		      
 		  return ret;
 	  }
+	  
+	  public  ContractId  getContractId() throws IOException
+	  {
+		  ContractId ret = null;
+		  
+			System.out.println("retrieve account smart contract list:" + clientAccountId);
+			JsonObject json = JsonReader.readJsonFromUrl("https://testnet.mirrornode.hedera.com/api/v1/transactions/?account.id="+clientAccountId+"&transactionType=contractcreateinstance");
+		    JsonArray jarr = json.getAsJsonArray("transactions");
+
+		    
+		    for (int i=0; i<jarr.size(); i++)
+		    {
+		    	JsonObject jo = (JsonObject) jarr.get(i);
+		    	String contractStr = (""+jo.get("entity_id")).replace("\"", "");
+			    if (!contractStr.equals("null"))
+			    	{
+				    	// get file_id from contract_id
+			    		ContractId contractId = ContractId.fromString(contractStr);	    		
+					    json = JsonReader.readJsonFromUrl("https://testnet.mirrornode.hedera.com/api/v1/contracts/"+contractId);    
+					    FileId fileId = FileId.fromString((""+json.get("file_id")).replace("\"", ""));
+					    if (fileId.equals(byteCodeFileId)) ret = contractId;
+			    	}
+		    }
+		      
+		  return ret;
+	  }
 	
 	public static void main(String[] args) throws TimeoutException, PrecheckStatusException, ReceiptStatusException, IOException
 	{
 
-	SuppliersContract sp = new SuppliersContract("CLIENT2");
+	SuppliersContract sp = new SuppliersContract("CLIENT3");
+	
+	System.out.println(""+sp);
     
     System.out.println("Checking client account balance:");
     AccountBalance accountBalance = sp.checkBalance(sp.clientAccountId);
     
-    System.out.println("Checking contract deployment: "+sp.isContractDeployed());
+    System.out.println("Checking contract deployment: "+sp.getContractId());
     
     /***************************
     *

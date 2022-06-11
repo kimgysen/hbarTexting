@@ -118,7 +118,9 @@ public class AccountsManager {
         
         //createNewAccount(client, "CLIENT2");
         
-        AccountId targetAccountId = AccountId.fromString(Dotenv.load().get("CLIENT2_ACCOUNT_ID"));
+        createNewAccount(client, "CLIENT3");
+        
+        AccountId targetAccountId = AccountId.fromString(Dotenv.load().get("CLIENT3_ACCOUNT_ID"));
         
         checkBalance(client, targetAccountId);
         

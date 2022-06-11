@@ -59,15 +59,15 @@ public class JsonReader {
 
 	  public static void main(String[] args) throws IOException 
 	  {
-		AccountId myAccountId = AccountId.fromString(Dotenv.load().get("MY_ACCOUNT_ID"));
 		AccountId client1AccountId = AccountId.fromString(Dotenv.load().get("CLIENT1_ACCOUNT_ID"));
-		AccountId client2AccountId = AccountId.fromString(Dotenv.load().get("CLIENT1_ACCOUNT_ID"));
+		AccountId client2AccountId = AccountId.fromString(Dotenv.load().get("CLIENT2_ACCOUNT_ID"));
+		AccountId client3AccountId = AccountId.fromString(Dotenv.load().get("CLIENT3_ACCOUNT_ID"));
 		AccountId kimAccountId = AccountId.fromString(Dotenv.load().get("KIM_ACCOUNT_ID"));
 		
 		
-		System.out.println(""+isContractDeployed(myAccountId));
 		System.out.println(""+isContractDeployed(client1AccountId));
 		System.out.println(""+isContractDeployed(client2AccountId));
+		System.out.println(""+isContractDeployed(client3AccountId));
 		System.out.println(""+isContractDeployed(kimAccountId));
 		
 		
