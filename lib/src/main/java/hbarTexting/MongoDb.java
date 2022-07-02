@@ -35,10 +35,11 @@ public class MongoDb
     public static void main(String[] args) throws Throwable 
     {
     	
-    	String mongoApiKey = Dotenv.load().get("MONGO_ADMIN_KEY");
+    	String mongoAdminKey = Dotenv.load().get("PROVENDB_ADMIN_KEY");
     	
-    	//ConnectionString connectionString = new ConnectionString("mongodb+srv://kitakazenodb:"+mongoApiKey+"@cluster0.mqynd.mongodb.net/?retryWrites=true&w=majority");
-    	ConnectionString connectionString = new ConnectionString("mongodb://kitakazenoaobara:Girolles05*@kitakazenoaobara.provendb.io/kitakazenoaobara?ssl=true");
+    	
+    	ConnectionString connectionString = new ConnectionString("mongodb://kitakazenoaobara:"+mongoAdminKey+"@kitakazenoaobara.provendb.io/kitakazenoaobara?ssl=true");
+    	System.out.println(connectionString);
     	MongoClientSettings settings = MongoClientSettings.builder()
     	        .applyConnectionString(connectionString)
     	        .serverApi(ServerApi.builder()

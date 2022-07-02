@@ -1,6 +1,7 @@
 package helper;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -46,8 +47,10 @@ public class JsonHelper {
 		  return doc;
 	  }
 
-	  public static File convertDocumentToFile(Document doc, String fileName) throws IOException
+	  public static File convertDocumentToFile(Document doc, String folder) throws IOException
 	  {
+		  
+		String fileName = "./"+folder+"/"+doc.get("filename");
 
 		File file = new File(fileName);  
 		  
@@ -62,6 +65,26 @@ public class JsonHelper {
 		return file;
 	  }
 	  
+	  public static String doc2jsonString(Document doc) 
+	  {
+			return ""+doc.toJson();
+	  }
+	  
+	  public static File doc2jsonFile(Document doc) throws FileNotFoundException, IOException
+	  {
+		  String fileName = "./tmp/"+(""+doc.get("filename")).replace(".", "_")+".json";
+		  
+		  File file = new File(fileName);  
+		  
+		  byte[] content = (""+doc.toJson()).getBytes();
+		  
+			try (FileOutputStream outputStream = new FileOutputStream(file)) {
+			    outputStream.write(content);
+			}
+			
+		 return file;
+	  }
+	  
 	  public static void main(String[] args) throws IOException 
 	  {
 
@@ -69,7 +92,9 @@ public class JsonHelper {
 	
 		Document doc = convertFileToDocument(testFile);
 		
-		File file = convertDocumentToFile(doc, "convertedFile.pdf");
+		//File file = convertDocumentToFile(doc, "download");
+		
+		doc2jsonFile(doc);
 		
 		
 	  }
