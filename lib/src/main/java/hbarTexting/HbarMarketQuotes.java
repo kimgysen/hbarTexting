@@ -8,6 +8,8 @@ import org.bson.conversions.Bson;
 
 import com.google.gson.JsonObject;
 
+import helper.JsonHelper;
+
 public class HbarMarketQuotes 
 {
 	
@@ -22,7 +24,7 @@ public class HbarMarketQuotes
 	{
         ts = new Timestamp(System.currentTimeMillis());    
         
-		JsonObject jo = JsonReader.readJsonFromUrl("https://min-api.cryptocompare.com/data/price?fsym=HBAR&tsyms=USD,EUR,JPY,GBP");
+		JsonObject jo = JsonHelper.readJsonFromUrl("https://min-api.cryptocompare.com/data/price?fsym=HBAR&tsyms=USD,EUR,JPY,GBP");
 		
 		HBAR_USD = Double.valueOf(""+jo.get("USD"));
 		HBAR_EUR = Double.valueOf(""+jo.get("EUR"));

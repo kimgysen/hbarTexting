@@ -15,6 +15,7 @@ import com.google.gson.JsonObject;
 import com.hedera.hashgraph.sdk.*;
 import io.github.cdimascio.dotenv.Dotenv;
 import hbarTexting.AccountsManager;
+import helper.JsonHelper;
 
 
 
@@ -186,7 +187,7 @@ public class SuppliersContract
 		  	boolean ret = false;
 		  
 			System.out.println("retrieve account smart contract list:" + clientAccountId);
-			JsonObject json = JsonReader.readJsonFromUrl("https://testnet.mirrornode.hedera.com/api/v1/transactions/?account.id="+clientAccountId+"&transactionType=contractcreateinstance");
+			JsonObject json = JsonHelper.readJsonFromUrl("https://testnet.mirrornode.hedera.com/api/v1/transactions/?account.id="+clientAccountId+"&transactionType=contractcreateinstance");
 		    JsonArray jarr = json.getAsJsonArray("transactions");
 
 		    
@@ -198,7 +199,7 @@ public class SuppliersContract
 			    	{
 				    	// get file_id from contract_id
 			    		ContractId contractId = ContractId.fromString(contractStr);	    		
-					    json = JsonReader.readJsonFromUrl("https://testnet.mirrornode.hedera.com/api/v1/contracts/"+contractId);    
+					    json = JsonHelper.readJsonFromUrl("https://testnet.mirrornode.hedera.com/api/v1/contracts/"+contractId);    
 					    FileId fileId = FileId.fromString((""+json.get("file_id")).replace("\"", ""));
 					    ret |=(fileId.equals(byteCodeFileId));
 			    	}
@@ -212,7 +213,7 @@ public class SuppliersContract
 		  ContractId ret = null;
 		  
 			System.out.println("retrieve account smart contract list:" + clientAccountId);
-			JsonObject json = JsonReader.readJsonFromUrl("https://testnet.mirrornode.hedera.com/api/v1/transactions/?account.id="+clientAccountId+"&transactionType=contractcreateinstance");
+			JsonObject json = JsonHelper.readJsonFromUrl("https://testnet.mirrornode.hedera.com/api/v1/transactions/?account.id="+clientAccountId+"&transactionType=contractcreateinstance");
 		    JsonArray jarr = json.getAsJsonArray("transactions");
 
 		    
@@ -224,7 +225,7 @@ public class SuppliersContract
 			    	{
 				    	// get file_id from contract_id
 			    		ContractId contractId = ContractId.fromString(contractStr);	    		
-					    json = JsonReader.readJsonFromUrl("https://testnet.mirrornode.hedera.com/api/v1/contracts/"+contractId);    
+					    json = JsonHelper.readJsonFromUrl("https://testnet.mirrornode.hedera.com/api/v1/contracts/"+contractId);    
 					    FileId fileId = FileId.fromString((""+json.get("file_id")).replace("\"", ""));
 					    if (fileId.equals(byteCodeFileId)) ret = contractId;
 			    	}

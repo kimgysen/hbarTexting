@@ -11,6 +11,8 @@ import com.google.gson.JsonObject;
 import com.hedera.hashgraph.sdk.AccountId;
 import com.hedera.hashgraph.sdk.Hbar;
 
+import helper.JsonHelper;
+
 public class WhalesWatcher 
 {
 	
@@ -24,7 +26,7 @@ public class WhalesWatcher
 	{
 		List<AccountId> ret = new ArrayList<AccountId>();
 		
-		JsonObject json =JsonReader.readJsonFromUrl(hederanet+"/api/v1/accounts?account.balance=gt:1000000000000000");
+		JsonObject json =JsonHelper.readJsonFromUrl(hederanet+"/api/v1/accounts?account.balance=gt:1000000000000000");
 	    JsonArray jarr = json.getAsJsonArray("accounts");
 		
 	    for (int i=0; i<jarr.size(); i++)
@@ -42,7 +44,7 @@ public class WhalesWatcher
 	{
 		List<AccountId> ret = new ArrayList<AccountId>();
 		
-		JsonObject json =JsonReader.readJsonFromUrl(hederanet+"/api/v1/accounts?account.balance=gt:"+limit);
+		JsonObject json =JsonHelper.readJsonFromUrl(hederanet+"/api/v1/accounts?account.balance=gt:"+limit);
 	    JsonArray jarr = json.getAsJsonArray("accounts");
 	    JsonElement links = json.getAsJsonObject("links").get("next");
 		
@@ -63,7 +65,7 @@ public class WhalesWatcher
 	    {
 	    	String next = hederanet+(""+links).replace("\"", "");
 	    	System.out.println(next);
-			json =JsonReader.readJsonFromUrl(next);
+			json =JsonHelper.readJsonFromUrl(next);
 		    jarr = json.getAsJsonArray("accounts");
 		    links = json.getAsJsonObject("links").get("next");
 		    
@@ -86,7 +88,7 @@ public class WhalesWatcher
 	public static Hbar getAccountBalance(AccountId accountId) throws IOException
 	{
 		Hbar balance = Hbar.from(0);
-		JsonObject json =JsonReader.readJsonFromUrl(hederanet+"/api/v1/balances?account.id="+accountId);
+		JsonObject json =JsonHelper.readJsonFromUrl(hederanet+"/api/v1/balances?account.id="+accountId);
 	    JsonArray jarr = json.getAsJsonArray("balances");
 	    JsonObject jo = (JsonObject) jarr.get(0);
 	    balance = Hbar.fromTinybars(Long.valueOf(""+jo.get("balance")));
@@ -100,7 +102,7 @@ public class WhalesWatcher
 		List<String> metadata = null;
 		
 		Hbar balance = Hbar.from(0);
-		JsonObject json =JsonReader.readJsonFromUrl(hederanet+"/api/v1/accounts/"+accountId+"/nfts");
+		JsonObject json =JsonHelper.readJsonFromUrl(hederanet+"/api/v1/accounts/"+accountId+"/nfts");
 	    JsonArray jarr = json.getAsJsonArray("nfts");
 	    
 	    
@@ -127,7 +129,7 @@ public class WhalesWatcher
 		String metadata = null;
 		
 		Hbar balance = Hbar.from(0);
-		JsonObject json =JsonReader.readJsonFromUrl(hederanet+"/api/v1/accounts/"+accountId+"/nfts");
+		JsonObject json =JsonHelper.readJsonFromUrl(hederanet+"/api/v1/accounts/"+accountId+"/nfts");
 	    JsonArray jarr = json.getAsJsonArray("nfts");
 	    
 	    
