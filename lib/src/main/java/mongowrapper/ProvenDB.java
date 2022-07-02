@@ -135,7 +135,7 @@ public class ProvenDB {
 
     	//p.uploadFile("pdf", file);
     	
-    	p.runCmd("'db.pdf.find();'");
+    	p.runCmd("'db.pdf.find({'filename':'test.pdf'});'");
     			
     }
 }
