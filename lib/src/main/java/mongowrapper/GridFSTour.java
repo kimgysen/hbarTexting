@@ -32,23 +32,40 @@ import com.mongodb.reactivestreams.client.gridfs.GridFSBuckets;
 import helpers.SubscriberHelpers.*;
 import io.github.cdimascio.dotenv.Dotenv;
 
+import org.bouncycastle.util.encoders.Base64;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.reactivestreams.Publisher;
+
+
+
+import static com.mongodb.client.model.Filters.eq;
+import static helpers.PublisherHelpers.toPublisher;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
-import static com.mongodb.client.model.Filters.eq;
-import static helpers.PublisherHelpers.toPublisher;;
 
 /**
  * The GridFS code example see: https://mongodb.github.io/mongo-java-driver/3.1/driver/reference/gridfs
  */
 public final class GridFSTour {
+	
+	
+    public static String hex(byte[] bytes) {
+        StringBuilder result = new StringBuilder();
+        for (byte aByte : bytes) {
+            result.append(String.format("%02x", aByte));
+            // upper case
+            // result.append(String.format("%02X", aByte));
+        }
+        return result.toString();
+    }
 
     /**
      * Run this main method to see the output of this quick example.
@@ -56,8 +73,9 @@ public final class GridFSTour {
      * @param args takes an optional single argument for the connection string
      * @throws FileNotFoundException if the sample file cannot be found
      * @throws IOException if there was an exception closing an input stream
+     * @throws NoSuchAlgorithmException 
      */
-    public static void main(final String[] args) throws FileNotFoundException, IOException {
+    public static void main(final String[] args) throws FileNotFoundException, IOException, NoSuchAlgorithmException {
         MongoClient mongoClient;
 
         if (args.length == 0) {
@@ -71,7 +89,7 @@ public final class GridFSTour {
         	            .build())
         	        .build();
         	
-        	System.out.println(""+connectionString);
+        	//System.out.println(""+connectionString);
         	 mongoClient = MongoClients.create(settings);
         } else {
             mongoClient = MongoClients.create(args[0]);
@@ -94,6 +112,14 @@ public final class GridFSTour {
         // Get the input publisher
         Publisher<ByteBuffer> publisherToUploadFrom = toPublisher(ByteBuffer.wrap("MongoDB Tutorial..".getBytes(StandardCharsets.UTF_8)));
 
+        		
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        md.update("MongoDB Tutorial..".getBytes());
+        byte[] digest = md.digest();
+        String myHash = new String (hex(digest));
+        
+        System.out.println(myHash);
+        
         // Create some custom options
         GridFSUploadOptions options = new GridFSUploadOptions()
                 .chunkSizeBytes(1024)
@@ -147,11 +173,13 @@ public final class GridFSTour {
         /*
          * Delete
          */
+        /*
         successSubscriber = new OperationSubscriber<>();
         gridFSBucket.delete(fileId).subscribe(successSubscriber);
         successSubscriber.await();
         System.out.println("Deleted file");
-
+         */
+        
         // Final cleanup
         /*
         successSubscriber = new OperationSubscriber<>();
