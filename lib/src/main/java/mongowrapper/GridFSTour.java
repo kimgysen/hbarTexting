@@ -32,7 +32,6 @@ import com.mongodb.reactivestreams.client.gridfs.GridFSBuckets;
 import helpers.SubscriberHelpers.*;
 import io.github.cdimascio.dotenv.Dotenv;
 
-import org.bouncycastle.util.encoders.Base64;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.reactivestreams.Publisher;
@@ -61,8 +60,6 @@ public final class GridFSTour {
         StringBuilder result = new StringBuilder();
         for (byte aByte : bytes) {
             result.append(String.format("%02x", aByte));
-            // upper case
-            // result.append(String.format("%02X", aByte));
         }
         return result.toString();
     }
@@ -123,7 +120,9 @@ public final class GridFSTour {
         // Create some custom options
         GridFSUploadOptions options = new GridFSUploadOptions()
                 .chunkSizeBytes(1024)
-                .metadata(new Document("type", "presentation"));
+                .metadata(new Document("type", "presentation")
+                		.append("hash", myHash)
+                		);
 
         ObservableSubscriber<ObjectId> uploadSubscriber = new OperationSubscriber<>();
         gridFSBucket.uploadFromPublisher("mongodb-tutorial", publisherToUploadFrom, options).subscribe(uploadSubscriber);
@@ -141,8 +140,8 @@ public final class GridFSTour {
         /*
          * Find documents with a filter
          */
-        filesSubscriber = new ConsumerSubscriber<>(gridFSFile -> System.out.println("Found: " + gridFSFile.getFilename()));
-        gridFSBucket.find(eq("metadata.contentType", "image/png")).subscribe(filesSubscriber);
+        filesSubscriber = new ConsumerSubscriber<>(gridFSFile -> System.out.println("Found by hash: " + gridFSFile.getFilename()));
+        gridFSBucket.find(eq("metadata.hash", "9a07b113986e59d7153ea17e1d8996bd")).subscribe(filesSubscriber);
         filesSubscriber.await();
 
         /*
@@ -162,6 +161,7 @@ public final class GridFSTour {
         size = downloadSubscriber.get().stream().map(Buffer::limit).reduce(0, Integer::sum);
         System.out.println("downloaded file sized: " + size);
 
+        
         /*
          * Rename
          */
@@ -173,12 +173,12 @@ public final class GridFSTour {
         /*
          * Delete
          */
-        /*
+        
         successSubscriber = new OperationSubscriber<>();
         gridFSBucket.delete(fileId).subscribe(successSubscriber);
         successSubscriber.await();
         System.out.println("Deleted file");
-         */
+         
         
         // Final cleanup
         /*
@@ -187,6 +187,8 @@ public final class GridFSTour {
         successSubscriber.await();
         System.out.println("Finished");
         */
+        
+        Runtime.getRuntime().halt(0);
     }
 
     private GridFSTour() {
