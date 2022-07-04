@@ -8,18 +8,22 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 import org.bson.Document;
 
-import helper.JsonHelper;
+import helpers.JsonHelper;
 import io.github.cdimascio.dotenv.Dotenv;
 
 
 public class ProvenDB {
 	
 	private static final String mongosh = "C:\\Users\\Lorand\\OneDrive\\Desktop\\mongosh-1.5.0-win32-x64\\bin\\mongosh";
+	
+	private static final String mongoexport = "C:\\Users\\Lorand\\OneDrive\\Desktop\\mongodb-database-tools-windows-x86_64-100.5.3\\bin\\mongoexport";
 	
 	private static String conn = null;
 	
@@ -46,9 +50,9 @@ public class ProvenDB {
 	}
 	
 	
-	private void runCmd(String mongoCmd) throws IOException, InterruptedException
+	private void runMongoCmd(String mongoCmd) throws IOException, InterruptedException
 	{
-		String[] cmd = {mongosh, 
+		String[] cmd = {mongoCmd, 
 				conn,
 				"--quiet",
 				"--eval",
@@ -70,6 +74,31 @@ public class ProvenDB {
 		
 	};
 	
+	private void runExportCmd(String mongoCmd) throws IOException, InterruptedException
+	{
+		String[] cmd = {
+				mongoexport, 
+				conn,
+				"--db=kitakazenoaobara",
+				"--collection=pdf",
+				"--out=./download/tmp.json",
+				mongoCmd
+				};
+		
+		System.out.println(String.join(" ", cmd));
+		
+		Process process;
+		process = Runtime.getRuntime()
+						.exec(cmd);
+
+		StreamGobbler streamGobbler = 
+		new StreamGobbler(process.getErrorStream(), System.out::println);
+		Executors.newSingleThreadExecutor().submit(streamGobbler);
+
+		int ret = process.waitFor();
+		
+	};
+	
 	private void runJavaScript(String JsScriptName) throws IOException, InterruptedException
 	{
 		String[] cmd = {mongosh, 
@@ -78,6 +107,8 @@ public class ProvenDB {
 				"--file",
 				JsScriptName
 				};
+		
+		System.out.println(String.join(" ", cmd));
 		
 		
 		Process process;
@@ -114,7 +145,7 @@ public class ProvenDB {
 	{
 		String cmd = "'db."+collection+".insertOne("+doc.toJson().replace("\"", "")+");'";
 		System.out.println(cmd);
-		runCmd(cmd);
+		runMongoCmd(cmd);
 		
 	}
 	
@@ -127,15 +158,33 @@ public class ProvenDB {
 		runJavaScript(fileName);
 	}
 	
+	private void downloadFile(String collection, String fileName) throws IOException, InterruptedException
+	{
+		runExportCmd("--query=\"{\\\"filename\\\":\\\""+fileName+"\\\"}");
+		
+		Path filePath = Path.of("./download/tmp.json");
+
+		String content = Files.readString(filePath);
+		
+		Document doc = Document.parse(content);
+		
+		File file = JsonHelper.convertDocumentToFile(doc, "download");
+		
+		new File("./download/tmp.json").delete();
+		
+		Runtime.getRuntime().halt(0);
+	}
+	
     public static void main(String[] args) throws IOException, InterruptedException 
     {
     	ProvenDB p = new ProvenDB();
     	
-    	File file = new File("test.zip");
+    	File file = new File("test1.pdf");
 
-    	//p.uploadFile("pdf", file);
+    	p.uploadFile("pdf", file);
     	
-    	p.runCmd("'db.pdf.find({'filename':'test.pdf'});'");
+    	//p.runMongoCmd("'db.pdf.find({'filename':'test.pdf'});'");
+    	//p.downloadFile("pdf", "test.pdf");
     			
     }
 }

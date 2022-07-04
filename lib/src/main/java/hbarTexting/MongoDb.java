@@ -16,9 +16,9 @@ import com.mongodb.reactivestreams.client.MongoCollection;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoDatabase;
 
-import helper.SubscriberHelpers.ObservableSubscriber;
-import helper.SubscriberHelpers.OperationSubscriber;
-import helper.SubscriberHelpers.PrintDocumentSubscriber;
+import helpers.OldSubscriberHelpers.ObservableSubscriber;
+import helpers.OldSubscriberHelpers.OperationSubscriber;
+import helpers.OldSubscriberHelpers.PrintDocumentSubscriber;
 
 import com.mongodb.MongoClientSettings;
 import com.mongodb.ServerApi;
@@ -35,10 +35,9 @@ public class MongoDb
     public static void main(String[] args) throws Throwable 
     {
     	
-    	String mongoAdminKey = Dotenv.load().get("PROVENDB_ADMIN_KEY");
+    	String mongoAdminKey = Dotenv.load().get("MONGO_ADMIN_KEY");
     	
-    	
-    	ConnectionString connectionString = new ConnectionString("mongodb://kitakazenoaobara:"+mongoAdminKey+"@kitakazenoaobara.provendb.io/kitakazenoaobara?ssl=true");
+    	ConnectionString connectionString = new ConnectionString("mongodb+srv://kitakazenodb:"+mongoAdminKey+"@cluster0.mqynd.mongodb.net/myFirstDatabase");
     	System.out.println(connectionString);
     	MongoClientSettings settings = MongoClientSettings.builder()
     	        .applyConnectionString(connectionString)

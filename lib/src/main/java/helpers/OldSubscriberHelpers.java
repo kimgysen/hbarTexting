@@ -1,4 +1,4 @@
-package helper;
+package helpers;
 
 
 
@@ -18,7 +18,7 @@ import static java.lang.String.format;
 /**
  *  Subscriber helper implementations for the Quick Tour.
  */
-public final class SubscriberHelpers {
+public final class OldSubscriberHelpers {
 
     /**
      * A Subscriber that stores the publishers results and provides a latch so can block on completion.
@@ -149,6 +149,6 @@ public final class SubscriberHelpers {
         }
     }
 
-    private SubscriberHelpers() {
+    private OldSubscriberHelpers() {
     }
 }

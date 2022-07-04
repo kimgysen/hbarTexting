@@ -1,4 +1,4 @@
-package helper;
+package helpers;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -72,7 +72,7 @@ public class JsonHelper {
 	  
 	  public static File doc2jsonFile(Document doc) throws FileNotFoundException, IOException
 	  {
-		  String fileName = "./tmp/"+(""+doc.get("filename")).replace(".", "_")+".json";
+		  String fileName = "./download/"+(""+doc.get("filename")).replace(".", "_")+".json";
 		  
 		  File file = new File(fileName);  
 		  

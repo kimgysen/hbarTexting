@@ -11,7 +11,7 @@ import com.google.gson.JsonObject;
 import com.hedera.hashgraph.sdk.AccountId;
 import com.hedera.hashgraph.sdk.Hbar;
 
-import helper.JsonHelper;
+import helpers.JsonHelper;
 
 public class WhalesWatcher 
 {

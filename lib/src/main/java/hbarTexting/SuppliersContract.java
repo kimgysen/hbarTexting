@@ -15,7 +15,7 @@ import com.google.gson.JsonObject;
 import com.hedera.hashgraph.sdk.*;
 import io.github.cdimascio.dotenv.Dotenv;
 import hbarTexting.AccountsManager;
-import helper.JsonHelper;
+import helpers.JsonHelper;
 
 
 
