@@ -110,7 +110,7 @@ public final class GridFSTour {
         Publisher<ByteBuffer> publisherToUploadFrom = toPublisher(ByteBuffer.wrap("MongoDB Tutorial..".getBytes(StandardCharsets.UTF_8)));
 
         		
-        MessageDigest md = MessageDigest.getInstance("MD5");
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
         md.update("MongoDB Tutorial..".getBytes());
         byte[] digest = md.digest();
         String myHash = new String (hex(digest));
@@ -161,6 +161,18 @@ public final class GridFSTour {
         size = downloadSubscriber.get().stream().map(Buffer::limit).reduce(0, Integer::sum);
         System.out.println("downloaded file sized: " + size);
 
+        /*
+         * OpenDownloadStream
+         */
+        /*
+        GridFSDownloadStream downloadStream = gridFSBucket.openDownloadStream(fileId);
+        int fileLength = (int) downloadStream.getGridFSFile().getLength();
+        byte[] bytesToWriteTo = new byte[fileLength];
+        downloadStream.read(bytesToWriteTo);
+        downloadStream.close();
+
+        System.out.println(new String(bytesToWriteTo, StandardCharsets.UTF_8));
+        */
         
         /*
          * Rename
@@ -174,11 +186,12 @@ public final class GridFSTour {
          * Delete
          */
         
+        /*
         successSubscriber = new OperationSubscriber<>();
         gridFSBucket.delete(fileId).subscribe(successSubscriber);
         successSubscriber.await();
         System.out.println("Deleted file");
-         
+        */
         
         // Final cleanup
         /*
