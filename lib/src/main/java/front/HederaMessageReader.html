@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<meta http-equiv="X-UA_Compatible" content="ie=edge"/>
+	<title>Hedera Message Reader</title>
+	<style>
+	table, th, td {
+  		border: 1px solid white;
+  		border-collapse: collapse;
+	}
+	th, td {
+  		background-color: #96D4D4;
+	}
+	</style>
+</head>
+<body>
+<h1>"Trade Capture and certification" topic reader</h1>
+<p>
+<table>
+  <tr>
+    <th>Message_Id</th>
+    <th>TimeStamp</th>
+    <th>Message</th>
+  </tr>
+  <tr>
+    <td><span id="id0"></span></td>
+    <td><span id="timestamp0"></span></td>
+    <td><span id="message0"></span></td>
+  </tr>
+  <tr>
+    <td><span id="id1"></span></td>
+    <td><span id="timestamp1"></span></td>
+    <td><span id="message1"></span></td>
+  </tr>
+  <tr>
+    <td><span id="id2"></span></td>
+    <td><span id="timestamp2"></span></td>
+    <td><span id="message2"></span></td>
+  </tr>
+  <tr>
+    <td><span id="id3"></span></td>
+    <td><span id="timestamp3"></span></td>
+    <td><span id="message3"></span></td>
+  </tr>
+  <tr>
+    <td><span id="id4"></span></td>
+    <td><span id="timestamp4"></span></td>
+    <td><span id="message4"></span></td>
+  </tr> 
+  <tr>
+    <td><span id="id5"></span></td>
+    <td><span id="timestamp5"></span></td>
+    <td><span id="message5"></span></td>
+  </tr>   
+   <tr>
+    <td><span id="id6"></span></td>
+    <td><span id="timestamp6"></span></td>
+    <td><span id="message6"></span></td>
+  </tr>  
+   <tr>
+    <td><span id="id7"></span></td>
+    <td><span id="timestamp7"></span></td>
+    <td><span id="message7"></span></td>
+  </tr>  
+  <tr>
+    <td><span id="id8"></span></td>
+    <td><span id="timestamp8"></span></td>
+    <td><span id="message8"></span></td>
+  </tr>      
+</table>
+</p>
+<script>
+	const api_url = 'https://testnet.mirrornode.hedera.com/api/v1/topics/0.0.4228142/messages'
+	async function getMessages(){
+		const response = await fetch(api_url);
+		const data = await response.json();
+		const N = data.messages.length;
+		console.log('length: '+N);
+		console.log(atob(data.messages[8].message));
+		for (let i = 0; i < N; i++) {
+			displayMessage(i, data.messages[i]);
+			}
+	}
+	async function displayMessage(i, message){
+		console.log(message);
+		document.getElementById('id'+i).textContent=message.sequence_number;
+		document.getElementById('timestamp'+i).textContent=message.consensus_timestamp;
+		document.getElementById('message'+i).textContent=atob(message.message);
+	}
+	getMessages();
+	
+</script>
+</body>
+</html>

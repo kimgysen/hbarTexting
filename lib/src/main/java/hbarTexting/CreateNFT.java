@@ -4,11 +4,8 @@ import com.hedera.hashgraph.sdk.*;
 import io.github.cdimascio.dotenv.Dotenv;
 
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 
 public class CreateNFT {
@@ -252,7 +249,8 @@ public class CreateNFT {
     	
     	
         //Grab your Hedera testnet account ID and private key
-        AccountId kimAccountId = AccountId.fromString(Dotenv.load().get("KIM_ACCOUNT_ID"));
+    	AccountId kimAccountId = AccountId.fromString(Dotenv.load().get("KIM_ACCOUNT_ID"));
+    	AccountId inziAccountId = AccountId.fromString(Dotenv.load().get("INZI_ACCOUNT_ID"));
         AccountId myAccountId = AccountId.fromString(Dotenv.load().get("MY_ACCOUNT_ID"));
         PrivateKey myPrivateKey = PrivateKey.fromString(Dotenv.load().get("MY_PRIVATE_KEY")); 
         PublicKey myPublicKey = myPrivateKey.getPublicKey();
@@ -276,8 +274,35 @@ public class CreateNFT {
  *         
  ****************/
  
-       listAccountNfts(client, kimAccountId);
+
+       
+       /*Create INZI NFTs*/
+       
+   	//Create funky kid NFT token
+    /*
+    String funkyKidCID = ("QmX46rrWbm1i3iMGGJU5ZsUmx3oBeCLF7oMzvrr6DwNpBb") ;
+   	TokenId inziTokenId = createNftToken(client, myAccountId, myPrivateKey, myPublicKey, "Funky Kid", "INZI");   		
+    mintToken(client, inziTokenId, myPrivateKey, funkyKidCID);
+	*/
         
+     NftId funkyKidTokenId = TokenId.fromString("0.0.47832833").nft(1);
+   	
+     
+     //Create funky tongue NFT token
+
+     /*
+     String funkyTongueCID = ("QmPRqJwK6FpvPj177yDBzuUtMNKNykpP4y344tf4p91hTu") ;
+     TokenId inziTokenId = createNftToken(client, myAccountId, myPrivateKey, myPublicKey, "Funky Tongue", "INZI");   		
+     mintToken(client, inziTokenId, myPrivateKey, funkyTongueCID);
+     */
+     
+     NftId funkyTongueTokenId = TokenId.fromString("0.0.47832902").nft(1);
+
+       
+    //   NftId nftId = tokenId.nft(1);
+        
+    listAccountNfts(client, myAccountId);
+    
   if (false)
   {
 	  

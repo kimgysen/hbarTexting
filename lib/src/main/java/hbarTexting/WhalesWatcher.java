@@ -151,7 +151,7 @@ public class WhalesWatcher
 	
 		String testnetLimit = "1500000000000";
 		String mainnetLimit = "10000000000000";
-		String limit = (hederanet.equals(testnet)?testnetLimit:mainnetLimit);
+		String limit = (hederanet.equals(mainnet)?testnetLimit:mainnetLimit);
 		
 		List<AccountId> whales = browzeWhalesByNfts(limit);
 		
