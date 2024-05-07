@@ -2,9 +2,12 @@ package hbarTexting;
 
 import com.hedera.hashgraph.sdk.*;
 import io.github.cdimascio.dotenv.Dotenv;
-
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Random;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Stream;
 
 
 
@@ -61,7 +64,7 @@ public class HederaDB {
 		 TransactionReceipt receipt = submitMessage.getReceipt(client);
 
 		//Prevent the main thread from exiting so the topic message can be returned and printed to the console
-		Thread.sleep(300000);
+		Thread.sleep(30000);
 		
 		return receipt;
 	}
@@ -76,19 +79,59 @@ public class HederaDB {
 		return client;
 	}
 	
-public static void main(String[] args) throws TimeoutException, PrecheckStatusException, ReceiptStatusException, InterruptedException
+	public static String accessLineInFile(String fileName, int lineNumber) throws Exception {
+		String line = "";
+		try (Stream<String> lines = Files.lines(Paths.get(fileName))) {
+	    line = lines.skip(lineNumber-1).findFirst().get();
+	}
+    return line;
+	}
+	
+	public static String getRandomName() throws Exception
+	{
+		Random rand = new Random();
+	  int position = rand.nextInt(4945);
+		return accessLineInFile("./src/main/java/ressources/first-names.txt", position);
+	}
+	
+
+	
+public static void main(String[] args) throws Exception
 {
 	
 	//TopicId dbTopicId = createDatabaseTopicId("Simple Transaction Capture Demo");
-	
-	
+		
 		TopicId dbTopicId = TopicId.fromString(Dotenv.load().get("MY_DB_TOPIC_ID"));
-
-      
-    String record = "FATIMA, GEORGE, 54986, 25.45";
-    String memo = "new record";
-    insertRecord(dbTopicId, record, memo);        
 	
+		Random rand = new Random();
+		
+		for (int i=0; i<500; i++)
+		{
+			long start = System.currentTimeMillis();
+			try {
+					String buyer = getRandomName();
+					String seller = getRandomName();
+					int id  = rand.nextInt(10000);
+					double price  = rand.nextDouble(1000);
+		
+					String record = buyer+", "+seller+", "+id+", "+price;
+					String memo = "new record";
+					System.out.println(record);
+    
+					TransactionReceipt rct = insertRecord(dbTopicId, record, memo);
+					System.out.println(rct);
+					
+			}catch(Exception e) {
+					System.out.println(""+e);
+			}
+			
+			long finish = System.currentTimeMillis();
+			long timeElapsed = finish - start;
+			
+			System.out.println(""+timeElapsed/1000+" s elapsed...");
+			
+		}
+    
 }
 
 }

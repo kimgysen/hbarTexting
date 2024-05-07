@@ -76,28 +76,28 @@
     <td><span id="price6"></span></td>
   </tr>   
    <tr>
-    <td><span id="id1"></span></td>
-    <td><span id="timestamp1"></span></td>
-    <td><span id="seller1"></span></td>
-    <td><span id="buyer1"></span></td>
-    <td><span id="serialid1"></span></td>
-    <td><span id="price1"></span></td>
+    <td><span id="id7"></span></td>
+    <td><span id="timestamp7"></span></td>
+    <td><span id="seller7"></span></td>
+    <td><span id="buyer7"></span></td>
+    <td><span id="serialid7"></span></td>
+    <td><span id="price7"></span></td>
   </tr>  
    <tr>
-    <td><span id="id1"></span></td>
-    <td><span id="timestamp1"></span></td>
-    <td><span id="seller1"></span></td>
-    <td><span id="buyer1"></span></td>
-    <td><span id="serialid1"></span></td>
-    <td><span id="price1"></span></td>
+    <td><span id="id8"></span></td>
+    <td><span id="timestamp8"></span></td>
+    <td><span id="seller8"></span></td>
+    <td><span id="buyer8"></span></td>
+    <td><span id="serialid8"></span></td>
+    <td><span id="price8"></span></td>
   </tr>  
   <tr>
-    <td><span id="id1"></span></td>
-    <td><span id="timestamp1"></span></td>
-    <td><span id="seller1"></span></td>
-    <td><span id="buyer1"></span></td>
-    <td><span id="serialid1"></span></td>
-    <td><span id="price1"></span></td>
+    <td><span id="id9"></span></td>
+    <td><span id="timestamp9"></span></td>
+    <td><span id="seller9"></span></td>
+    <td><span id="buyer9"></span></td>
+    <td><span id="serialid9"></span></td>
+    <td><span id="price9"></span></td>
   </tr>      
 </table>
 </p>
@@ -118,7 +118,7 @@
 		data = atob(row.message).split(',');
 		console.log(data);
 		document.getElementById('id'+i).textContent=row.sequence_number;
-		document.getElementById('seller'+i).textContent=row.consensus_timestamp;
+		document.getElementById('timestamp'+i).textContent=row.consensus_timestamp;
 		document.getElementById('buyer'+i).textContent=data[0];
 		document.getElementById('seller'+i).textContent=data[1];
 		document.getElementById('serialid'+i).textContent=data[2];
