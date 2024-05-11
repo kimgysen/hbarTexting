@@ -37,7 +37,7 @@ import com.mongodb.reactivestreams.client.MongoDatabase;
 import com.mongodb.reactivestreams.client.gridfs.GridFSBucket;
 import com.mongodb.reactivestreams.client.gridfs.GridFSBuckets;
 
-import hbarTexting.HederaTopic;
+import hbarTopics.HederaTopic;
 import helpers.SubscriberHelpers.ConsumerSubscriber;
 import helpers.SubscriberHelpers.ObservableSubscriber;
 import helpers.SubscriberHelpers.OperationSubscriber;

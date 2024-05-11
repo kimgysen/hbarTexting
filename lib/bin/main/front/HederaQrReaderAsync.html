@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1>Hedera Topics</h1>
+<h2>Hedera QR code Reader</h2>
+
+<canvas id="myCanvas" width="300" height="300" style="border:1px solid grey"></canvas>
+
+<script>
+	const api_url = 'https://testnet.mirrornode.hedera.com/api/v1/topics/0.0.4228142/messages/9';
+	const c = document.getElementById("myCanvas");
+	const ctx = c.getContext("2d");
+	
+	function drawSquare(i, j, squareLength){
+		ctx.fillRect(i*squareLength, j*squareLength, squareLength, squareLength);
+	}
+	function drawQr(words, N, squareLength){
+		for (let i = 0; i < N; i++) {
+			for (let j = 0; j < N; j++) {
+				if (words[i].trim().charAt(j)=="1") drawSquare(j, i, squareLength);	
+			}
+		}
+	}	
+	async function getMessage(){
+		const response = await fetch(api_url);
+		var data = await response.json();
+		var qrString =  atob(data.message);
+		return qrString
+	}
+	(async function(){
+		  let message = await getMessage();
+		  message = message.replace("{", "").replace("}", "");
+			 words = message.split(",");
+			 const N = words.length;
+			 const squareLength = c.width/N;			  
+			 drawQr(words, N, squareLength);
+	 })();
+</script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<meta http-equiv="X-UA_Compatible" content="ie=edge"/>
+	<title>Hedera Message Reader</title>
+	<style>
+	table, th, td {
+  		border: 1px solid white;
+  		border-collapse: collapse;
+	}
+	th, td {
+  		background-color: #96D4D4;
+	}
+	</style>
+</head>
+<body>
+<h1>"Trade Capture and certification" Database reader</h1>
+<p>
+<table>
+  <tr>
+    <th>Message_Id</th>
+    <th>TimeStamp</th>
+    <th>SELLER</th>
+    <th>BUYER</th>
+    <th>SERIALID</th>
+    <th>PRICE</th>
+  </tr>
+  <tr>
+    <td><span id="id1"></span></td>
+    <td><span id="timestamp1"></span></td>
+    <td><span id="seller1"></span></td>
+    <td><span id="buyer1"></span></td>
+    <td><span id="serialid1"></span></td>
+    <td><span id="price1"></span></td>
+  </tr>
+  <tr>
+    <td><span id="id2"></span></td>
+    <td><span id="timestamp2"></span></td>
+    <td><span id="seller2"></span></td>
+    <td><span id="buyer2"></span></td>
+    <td><span id="serialid2"></span></td>
+    <td><span id="price2"></span></td>
+  </tr>
+  <tr>
+    <td><span id="id3"></span></td>
+    <td><span id="timestamp3"></span></td>
+    <td><span id="seller3"></span></td>
+    <td><span id="buyer3"></span></td>
+    <td><span id="serialid3"></span></td>
+    <td><span id="price3"></span></td>
+  </tr>
+  <tr>
+    <td><span id="id4"></span></td>
+    <td><span id="timestamp4"></span></td>
+    <td><span id="seller4"></span></td>
+    <td><span id="buyer4"></span></td>
+    <td><span id="serialid4"></span></td>
+    <td><span id="price4"></span></td>
+  </tr>
+  <tr>
+    <td><span id="id5"></span></td>
+    <td><span id="timestamp5"></span></td>
+    <td><span id="seller5"></span></td>
+    <td><span id="buyer5"></span></td>
+    <td><span id="serialid5"></span></td>
+    <td><span id="price5"></span></td>
+  </tr> 
+  <tr>
+    <td><span id="id6"></span></td>
+    <td><span id="timestamp6"></span></td>
+    <td><span id="seller6"></span></td>
+    <td><span id="buyer6"></span></td>
+    <td><span id="serialid6"></span></td>
+    <td><span id="price6"></span></td>
+  </tr>   
+   <tr>
+    <td><span id="id7"></span></td>
+    <td><span id="timestamp7"></span></td>
+    <td><span id="seller7"></span></td>
+    <td><span id="buyer7"></span></td>
+    <td><span id="serialid7"></span></td>
+    <td><span id="price7"></span></td>
+  </tr>  
+   <tr>
+    <td><span id="id8"></span></td>
+    <td><span id="timestamp8"></span></td>
+    <td><span id="seller8"></span></td>
+    <td><span id="buyer8"></span></td>
+    <td><span id="serialid8"></span></td>
+    <td><span id="price8"></span></td>
+  </tr>  
+  <tr>
+    <td><span id="id9"></span></td>
+    <td><span id="timestamp9"></span></td>
+    <td><span id="seller9"></span></td>
+    <td><span id="buyer9"></span></td>
+    <td><span id="serialid9"></span></td>
+    <td><span id="price9"></span></td>
+  </tr>      
+</table>
+</p>
+<script>
+	const api_url = 'https://testnet.mirrornode.hedera.com/api/v1/topics/0.0.4256430/messages'
+	async function getMessages(){
+		const response = await fetch(api_url);
+		const data = await response.json();
+		const N = data.messages.length;
+		console.log('length: '+N);
+		header = data.messages[0]
+		//document.getElementById('header').textContent='SELLER</th><th>BUYER</th><th>SERIALID</th><th>PRICE';
+		for (let i = 1; i < N; i++) {
+			displayMessage(i, data.messages[i]);
+			}
+	}
+	async function displayMessage(i, row){
+		data = atob(row.message).split(',');
+		console.log(data);
+		document.getElementById('id'+i).textContent=row.sequence_number;
+		document.getElementById('timestamp'+i).textContent=row.consensus_timestamp;
+		document.getElementById('buyer'+i).textContent=data[0];
+		document.getElementById('seller'+i).textContent=data[1];
+		document.getElementById('serialid'+i).textContent=data[2];
+		document.getElementById('price'+i).textContent=data[3];
+	}
+	getMessages();
+	
+</script>
+</body>
+</html>
