@@ -1,4 +1,5 @@
-package hbarTopics;
+package demos;
+
 
 
 import java.io.InputStream;
@@ -11,7 +12,7 @@ import com.google.gson.JsonObject;
 import com.hedera.hashgraph.sdk.*;
 import io.github.cdimascio.dotenv.Dotenv;
 
-public class CreateSmartContract 
+public class BankContract 
 {
 	
 	public static AccountBalance checkBalance(Client client, AccountId newAccountId) throws TimeoutException, PrecheckStatusException
@@ -33,7 +34,7 @@ public class CreateSmartContract
 	    Gson gson = new Gson();
 	    JsonObject jsonObject;
 
-	    InputStream jsonStream = CreateSmartContract.class.getClassLoader().getResourceAsStream(jsonFilename);
+	    InputStream jsonStream = BankContract.class.getClassLoader().getResourceAsStream(jsonFilename);
 	    jsonObject = gson.fromJson(new InputStreamReader(jsonStream, StandardCharsets.UTF_8), JsonObject.class);
 
 	    //Store the "object" field from the HelloHedera.json file as hex-encoded bytecode
@@ -50,6 +51,10 @@ public class CreateSmartContract
 	            //Set the bytecode of the contract
 	            .setContents(bytecode);
 
+	    
+	    System.out.println("bytecode size is:"+bytecode.length);
+	    
+	    
 	    //Submit the file to the Hedera test network signing with the transaction fee payer key specified with the client
 	    TransactionResponse submitTx = fileCreateTx.execute(client);
 
@@ -74,8 +79,7 @@ public class CreateSmartContract
 	         .setBytecodeFileId(bytecodeFileId)
 	         //Set the gas to instantiate the contract
 	         .setGas(100_000)
-	         //Provide the constructor parameters for the contract
-	         .setConstructorParameters(new ContractFunctionParameters().addString("Hello from Hedera!"));
+	         ;
 
 	   //Submit the transaction to the Hedera test network
 	   TransactionResponse contractResponse = contractTx.execute(client);
@@ -147,7 +151,7 @@ public class CreateSmartContract
     client.setOperator(myAccountId, myPrivateKey);
     
     System.out.println("Checking My Account balance:");
-    //AccountBalance myAccountBalance = checkBalance(client, myAccountId);
+    AccountBalance myAccountBalance = checkBalance(client, myAccountId);
     
     /***************************
     *
@@ -156,36 +160,33 @@ public class CreateSmartContract
     ****************/
     
   //Import the compiled contract from the HelloHedera.json file
-    byte[] bytecode = retrieveBytecodeFromJson("HelloHedera.json");
-    System.out.println(bytecode);  
+    byte[] bytecode = retrieveBytecodeFromJson("BankContract.json");
    
 
     //Get the file ID from the receipt
     //FileId bytecodeFileId = loadBytecodeToHederaFile(client, bytecode);
-    //Log the file ID
     //System.out.println("The smart contract bytecode file ID is " +bytecodeFileId);
 
-    /*The bytecode file ID is 0.0.34376591*/
     
-    FileId bytecodeFileId = FileId.fromString("0.0.34376591");
+    //FileId bytecodeFileId = FileId.fromString("0.0.45909545");
     
-
+    
     //ContractId contractId = createSmartContract(client, bytecodeFileId);
     /*The smart contract ID is 0.0.34376603*/
    //Log the smart contract ID
-    ContractId contractId = ContractId.fromString("0.0.34376603");
+    ContractId contractId = ContractId.fromString("0.0.45909546");
     System.out.println("The smart contract ID is " + contractId);
 
  
+    /*
     String message = getContractMessage(client, contractId);
-    //Log the message
+
     System.out.println("The contract message: " + message);
     
     setContractMessage(client, contractId, "Hello from Hedera again!!");
     
-  //Log the message
     System.out.println("The new contract message: " + getContractMessage(client, contractId));
-    
+    */
     
     /***************************
     *

@@ -105,7 +105,7 @@ public static void main(String[] args) throws Exception
 	
 		Random rand = new Random();
 		
-		for (int i=0; i<500; i++)
+		for (int i=0; i<5; i++)
 		{
 			long start = System.currentTimeMillis();
 			try {

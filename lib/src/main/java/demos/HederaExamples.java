@@ -1,4 +1,4 @@
-package hbarTopics;
+package demos;
 
 
 import com.hedera.hashgraph.sdk.*;
