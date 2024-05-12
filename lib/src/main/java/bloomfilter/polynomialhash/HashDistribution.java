@@ -51,7 +51,7 @@ public class HashDistribution {
 	}
 	
 	private String[] loadSet() throws IOException {
-		Path filePath = new File("./src/ressources/set.txt").toPath();
+		Path filePath = new File("./src/main/java/ressources/set.txt").toPath();
 		Charset charset = Charset.defaultCharset();        
 		List<String> stringList = Files.readAllLines(filePath, charset);
 		
@@ -64,16 +64,16 @@ public class HashDistribution {
 		for (int i=0; i<setSize; i++)
 		{
 	    int position = rand.nextInt(466551);
-	    randomSet[i] = accessLineInFile("./src/data/words.txt", position);
+	    randomSet[i] = accessLineInFile("./src/main/java/ressources/words.txt", position);
 	    //System.out.println(randomSet[i]);
 		}
 		return randomSet;
-	}
+	} 
 	
 	
 	public  void write() throws IOException{
 	  BufferedWriter outputWriter = null;
-	  String fileName = "./src/data/hashdistributions/Test"+h.p+"_"+h.M+"_"+setSize+"_1.txt";
+	  String fileName = "./src/main/java/ressources/Test"+h.p+"_"+h.M+"_"+setSize+"_1.txt";
 	  outputWriter = new BufferedWriter(new FileWriter(fileName));
 	  for (int i = 0; i < setSize; i++) {
 	    outputWriter.write(Integer.toString(hashes[i]));
@@ -85,7 +85,7 @@ public class HashDistribution {
 	
 	public  void saveSet() throws IOException{
 	  BufferedWriter outputWriter = null;
-	  String fileName = "./src/data/set.txt";
+	  String fileName = "./src/main/java/ressources/set.txt";
 	  outputWriter = new BufferedWriter(new FileWriter(fileName));
 	  for (int i = 0; i < setSize; i++) {
 	    outputWriter.write(set[i]);

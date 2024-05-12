@@ -1,4 +1,4 @@
-package hbarTopics;
+package hedera.database;
 
 import com.hedera.hashgraph.sdk.*;
 import io.github.cdimascio.dotenv.Dotenv;
@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 
 
 
-public class HederaDB {
+public class Database {
 
   private static AccountId myAccountId = AccountId.fromString(Dotenv.load().get("MY_ACCOUNT_ID"));
   private static PrivateKey myPrivateKey = PrivateKey.fromString(Dotenv.load().get("MY_PRIVATE_KEY"));  
@@ -20,22 +20,16 @@ public class HederaDB {
 	
 	public static TopicId createDatabaseTopicId(String dbName) throws InterruptedException, TimeoutException, PrecheckStatusException, ReceiptStatusException
 	{
-		//Create a new topic
 		TransactionResponse txResponse = new TopicCreateTransaction()
 		   .setTopicMemo(dbName)
 		   .execute(client);
 
-		//Get the receipt
 		TransactionReceipt receipt = txResponse.getReceipt(client);
 		        
-		//Get the topic ID
 		TopicId dbTopicId = receipt.topicId;
 
-		//Log the topic ID
 		System.out.println("Your Database topic ID is: " +dbTopicId+". Don't forget to save it to .env .");
 		
-
-		// Wait 5 seconds between consensus topic creation and subscription creation
 		Thread.sleep(5000);
 		
 		return dbTopicId;
@@ -43,9 +37,8 @@ public class HederaDB {
 	
 	public static TransactionReceipt insertRecord(TopicId dbTopicId, String record, String memo) throws InterruptedException, TimeoutException, PrecheckStatusException, ReceiptStatusException
 	{
-	
+	 
 		
-		//Subscribe to the topic
 		new TopicMessageQuery()
 		    .setTopicId(dbTopicId)
 		    .subscribe(client, resp -> {
@@ -53,17 +46,15 @@ public class HederaDB {
 		            System.out.println(resp.consensusTimestamp + " received topic message: " + messageAsString);
 		    });
 		
-		//Submit a message to a topic
+
 		TransactionResponse submitMessage = new TopicMessageSubmitTransaction()
 		      .setTopicId(dbTopicId)
 		      .setMessage(record)
 		      .setTransactionMemo(memo)
 		      .execute(client);
 
-		//Get the receipt of the transaction
 		 TransactionReceipt receipt = submitMessage.getReceipt(client);
 
-		//Prevent the main thread from exiting so the topic message can be returned and printed to the console
 		Thread.sleep(30000);
 		
 		return receipt;
@@ -99,7 +90,6 @@ public class HederaDB {
 public static void main(String[] args) throws Exception
 {
 	
-	//TopicId dbTopicId = createDatabaseTopicId("Simple Transaction Capture Demo");
 		
 		TopicId dbTopicId = TopicId.fromString(Dotenv.load().get("MY_DB_TOPIC_ID"));
 	

@@ -1,11 +1,12 @@
 package bloomfilter.binarytree;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -62,7 +63,7 @@ public class Node {
       	 	Map<String, Object> properties = new HashMap<String, Object>(2);
       	 	properties.put(JAXBContextProperties.MEDIA_TYPE, "application/json");
       	 	properties.put(JAXBContextProperties.JSON_INCLUDE_ROOT, false);
-          JAXBContext context = org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(new Class[] {Node.class, ObjectFactory.class}, properties);
+      	 	jakarta.xml.bind.JAXBContext context = org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(new Class[] {Node.class, ObjectFactory.class}, properties);
           Marshaller marshaller = context.createMarshaller();
           marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
@@ -101,16 +102,31 @@ public class Node {
       }    	
     }
     
-    public static Node load(String fileName) throws JAXBException {
+    public static Node fromXml(String fileName) throws JAXBException {
       File file = new File(fileName);
       JAXBContext context = org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(new Class[] {Node.class}, null);
       Unmarshaller jaxbUnmarshaller = context.createUnmarshaller();
       return (Node) jaxbUnmarshaller.unmarshal(file);
-  }
-    
+    }
+
+    public static Node fromJson(String fileName) throws JAXBException {
+      ObjectMapper mapper = new ObjectMapper();
+      try {
+          return mapper.readValue(new File(fileName), Node.class);
+      } catch (IOException e) {
+          e.printStackTrace();
+          return null;
+      }
+    }
+
+     
     public static void main(String[] args) throws JAXBException {
 
-    	Node n = load("BinaryTree.xml");
+    	Node n = fromXml("BinaryTree.xml");
     	System.out.println(n);
+    	
+    			 n = fromJson("BinaryTree.json");
+    	System.out.println(n);
+    	
     }
 }

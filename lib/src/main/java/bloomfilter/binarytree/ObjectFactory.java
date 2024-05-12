@@ -9,8 +9,8 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 @XmlRegistry
 public class ObjectFactory {
     
-    @XmlElementDecl(name = "bar")
-    public JAXBElement<Node> createBar(Node node) {
+    @XmlElementDecl(name = "node")
+    public JAXBElement<Node> createNode(Node node) {
         return new JAXBElement<Node>(new QName("node"), Node.class, node);
     }
 

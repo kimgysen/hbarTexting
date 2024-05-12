@@ -1,4 +1,4 @@
-package hbarTopics;
+package hedera.topics;
 
 import com.hedera.hashgraph.sdk.*;
 import io.github.cdimascio.dotenv.Dotenv;
@@ -9,7 +9,7 @@ import java.util.concurrent.TimeoutException;
 
 
 
-public class HederaTopic {
+public class Topic {
 
   private static AccountId myAccountId = AccountId.fromString(Dotenv.load().get("MY_ACCOUNT_ID"));
   private static PrivateKey myPrivateKey = PrivateKey.fromString(Dotenv.load().get("MY_PRIVATE_KEY"));  

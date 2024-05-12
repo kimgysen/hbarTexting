@@ -9,13 +9,13 @@ import org.junit.jupiter.api.Test;
 
 import bloomfilter.binarytree.BinaryTree;
 import jakarta.xml.bind.JAXBException;
-
+ 
 
 public class binarytreeTest {
 
 	@Test
 	public void givenABinaryTree_WhenAddingElements_ThenTreeContainsThoseElements() throws JAXBException {
-	    BinaryTree bt = BinaryTree.load("./BinaryTree.xml");
+	    BinaryTree bt = BinaryTree.fromXml("./BinaryTree.xml");
 
 	    assertTrue(bt.containsNode(6));
 	    assertTrue(bt.containsNode(4));
@@ -25,7 +25,7 @@ public class binarytreeTest {
 	
 	@Test
 	public void givenABinaryTree_WhenDeletingElements_ThenTreeDoesNotContainThoseElements() throws JAXBException {
-		BinaryTree bt = BinaryTree.load("./BinaryTree.xml");
+		BinaryTree bt = BinaryTree.fromXml("./BinaryTree.xml");
 
 	    assertTrue(bt.containsNode(9));
 	    bt.delete(9);

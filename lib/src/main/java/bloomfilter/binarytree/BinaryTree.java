@@ -55,12 +55,20 @@ public class BinaryTree {
     return containsNodeRecursive(root, value);
   }
   
-  public static BinaryTree load(String fileName) throws JAXBException
+  public static BinaryTree fromXml(String fileName) throws JAXBException
   {
   	BinaryTree bt = new BinaryTree();
-  	bt.root = Node.load(fileName);
+  	bt.root = Node.fromXml(fileName);
   	return bt;
   }
+
+  public static BinaryTree fromJson(String fileName) throws JAXBException
+  {
+  	BinaryTree bt = new BinaryTree();
+  	bt.root = Node.fromJson(fileName);
+  	return bt;
+  }
+
   
   private int findSmallestValue(Node root) {
     return root.getLeft() == null ? root.getValue() : findSmallestValue(root.getLeft());
@@ -113,7 +121,7 @@ public class BinaryTree {
   public static void main(String[] args) throws JAXBException
   {
   	
-  	BinaryTree bt = BinaryTree.load("./BinaryTree.xml");
+  	BinaryTree bt = BinaryTree.fromXml("./BinaryTree.xml");
   	System.out.println(bt);
   	
   	traverseInOrder(bt.root);
