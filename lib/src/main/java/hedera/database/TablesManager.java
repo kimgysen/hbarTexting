@@ -10,9 +10,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
 
 
-
-
-public class Database {
+public class TablesManager {
 
   private static AccountId myAccountId = AccountId.fromString(Dotenv.load().get("MY_ACCOUNT_ID"));
   private static PrivateKey myPrivateKey = PrivateKey.fromString(Dotenv.load().get("MY_PRIVATE_KEY"));  

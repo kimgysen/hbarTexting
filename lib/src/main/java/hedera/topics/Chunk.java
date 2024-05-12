@@ -13,7 +13,6 @@ import helpers.JsonHelper;
 
 public class Chunk {
 
-	
 	public static final String hederanet = "https://testnet.mirrornode.hedera.com";
 	private static URL url;
 	private TopicId topicId;
@@ -29,7 +28,7 @@ public class Chunk {
 	  String urlStr = (hederanet+""+((JsonObject)((JsonObject)json).get("links")).get("next")).replace("\"", "");
 	  setLink(new URL(urlStr));
 	  
-	  System.out.println(getLink());
+	  //System.out.println(getLink());
 	  
 	}
 	
@@ -48,28 +47,19 @@ public class Chunk {
 	 
 	 
 	public Message[] getMessagesFromJson(JsonObject json) throws IOException
-	{
-  	
-    
-		JsonArray jarr = json.getAsJsonArray("messages");
-		
-		System.out.println(jarr.size());
-		
-		//System.out.println( (JsonObject)jarr.get(0));
-		
+	{   
+		JsonArray jarr = json.getAsJsonArray("messages");		
     ObjectMapper mapper = new ObjectMapper();
     Message[] messages = new Message[jarr.size()];
     
     try {
       for (int i=0; i<jarr.size(); i++)
-      {
       	messages[i] = mapper.readValue(""+jarr.get(i), Message.class);
-      	System.out.println(messages[i]);
-      }
     } catch (IOException e) {
       e.printStackTrace();
       return null;
     }
+    
 		return messages;
 	}
 	

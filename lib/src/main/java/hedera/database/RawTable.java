@@ -10,24 +10,39 @@ import hedera.topics.Chunk;
 import hedera.topics.Message;
 import io.github.cdimascio.dotenv.Dotenv;
 
-public class Query {
+public class RawTable {
 	
 	private TopicId myDbTopicId = null;
+	private List<Message> messages = null;
+	private List<String> rawRecords = null;
 	
-	private List<Message> records = null; 
-	
-	public Query() throws IOException
+	public RawTable() throws IOException
 	{
 		myDbTopicId = TopicId.fromString(Dotenv.load().get("MY_DB_TOPIC_ID"));
-		records = getAllReccords();
+		messages = getAllMessages();
+		buildRawrecords();
 	}
 	
-	public Query(String topicId)
+	public RawTable(String topicId) throws IOException
 	{
 		myDbTopicId = TopicId.fromString(topicId);
+		messages = getAllMessages();
+		buildRawrecords();
 	}
 	
-	public List<Message> getAllReccords() throws IOException
+	public void buildRawrecords()
+	{
+		rawRecords = new ArrayList<String>();
+		for (Message m:messages)
+			rawRecords.add(m.getMessage());
+	}
+	
+	protected List<String> getRawRecords() {
+		
+		return this.rawRecords;
+	}
+	
+	public List<Message> getAllMessages() throws IOException
 	{
 			List<Message> records = new ArrayList();
 			
@@ -48,11 +63,10 @@ public class Query {
 	public static void main(String[] args) throws IOException
 	{
 		
-		Query q = new Query();
+		RawTable q = new RawTable();
 		
-		System.out.println(q.myDbTopicId);
-		
-		q.getAllReccords();
+	
+		System.out.println(q.messages.get(0));
 		
 	}
 

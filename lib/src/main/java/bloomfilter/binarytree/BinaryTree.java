@@ -4,7 +4,12 @@ import jakarta.xml.bind.JAXBException;
 
 public class BinaryTree {
 
-  Node root;
+  private Node root = new Node();
+  
+  public Node getRoot()
+  {
+  	return this.root;
+  }
 
   private Node addRecursive(Node current, int value) {
     if (current == null) {
@@ -117,7 +122,7 @@ public class BinaryTree {
         traverseInOrder(node.getRight());
     }
   }
-  
+   
   public static void main(String[] args) throws JAXBException
   {
   	

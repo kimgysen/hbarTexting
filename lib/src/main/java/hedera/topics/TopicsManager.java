@@ -9,7 +9,7 @@ import java.util.concurrent.TimeoutException;
 
 
 
-public class Topic {
+public class TopicsManager {
 
   private static AccountId myAccountId = AccountId.fromString(Dotenv.load().get("MY_ACCOUNT_ID"));
   private static PrivateKey myPrivateKey = PrivateKey.fromString(Dotenv.load().get("MY_PRIVATE_KEY"));  

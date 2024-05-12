@@ -37,7 +37,7 @@ import com.mongodb.reactivestreams.client.MongoDatabase;
 import com.mongodb.reactivestreams.client.gridfs.GridFSBucket;
 import com.mongodb.reactivestreams.client.gridfs.GridFSBuckets;
 
-import hedera.topics.Topic;
+import hedera.topics.TopicsManager;
 import helpers.SubscriberHelpers.ConsumerSubscriber;
 import helpers.SubscriberHelpers.ObservableSubscriber;
 import helpers.SubscriberHelpers.OperationSubscriber;
@@ -150,7 +150,7 @@ public class GridFS
 	{
 		System.out.println("Generate document proof:"+hash);
 		
-		 TransactionReceipt trx = Topic.submitMessage(hederaClient, proofTopicId, hash, hash);
+		 TransactionReceipt trx = TopicsManager.submitMessage(hederaClient, proofTopicId, hash, hash);
 		 
 		 System.out.println(trx);
 		
