@@ -1,16 +1,15 @@
-package bloomfilter.binarytree;
+package hedera.database.index;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-import jakarta.xml.bind.JAXBException;
 
-public class BinaryTree {
+public class BinaryTree<T> {
 
   private Node root = new Node();
   
-  private List<Integer> sortedValues;
+  private List<T> sortedValues;
   
   public Node getRoot()
   {
@@ -22,9 +21,9 @@ public class BinaryTree {
 	}
 
   
-  public List<Integer> getSortedValues()
+  public List<T> getSortedValues()
   {
-  	sortedValues = new ArrayList<Integer>();
+  	sortedValues = new ArrayList<T>();
   	
   	addSortedValues(this.root);
   	
@@ -34,22 +33,22 @@ public class BinaryTree {
   public void addSortedValues(Node node){
     if (node != null) {
     	addSortedValues(node.getLeft());
-    	sortedValues.add(node.getValue());
+    	sortedValues.add((T) node.getValue());
       addSortedValues(node.getRight());
   }
  }
 
   
-  private Node addRecursive(Node current, int value) {
+  private Node addRecursive(Node current, T value) {
     if (current == null) {
     	  Node n = new Node();
     		n.setValue(value);
         return n;
     }
 
-    if (value < current.getValue()) {
+    if (compare(value, current.getValue())<0) {
         current.setLeft(addRecursive(current.getLeft(), value));
-    } else if (value > current.getValue()) {
+    } else if (value.compareTo(current.getValue())>0) {
         current.setRight(addRecursive(current.getRight(), value));
     } else {
         return current;
@@ -67,13 +66,10 @@ public class BinaryTree {
   	root.saveJson(fileName);
   }
    
-  public void saveXml(String fileName)
-  {
-  	root.saveXml(fileName);
-  }
+
 
   
-  private boolean containsNodeRecursive(Node current, int value) {
+  private boolean containsNodeRecursive(Node current, T value) {
     if (current == null) {
         return false;
     } 
@@ -89,14 +85,8 @@ public class BinaryTree {
     return containsNodeRecursive(root, value);
   }
   
-  public static BinaryTree fromXml(String fileName) throws JAXBException
-  {
-  	BinaryTree bt = new BinaryTree();
-  	bt.root = Node.fromXml(fileName);
-  	return bt;
-  }
 
-  public static BinaryTree fromJson(String fileName) throws JAXBException
+  public static BinaryTree fromJson(String fileName) 
   {
   	BinaryTree bt = new BinaryTree();
   	bt.root = Node.fromJson(fileName);
@@ -104,20 +94,20 @@ public class BinaryTree {
   }
 
   
-  private int findSmallestValue(Node root) {
-    return root.getLeft() == null ? root.getValue() : findSmallestValue(root.getLeft());
+  private T findSmallestValue(Node root) {
+    return root.getLeft() == null ? (T) root.getValue() : findSmallestValue(root.getLeft());
   }
   
   public void delete(int value) {
     root = deleteRecursive(root, value);
   }
   
-  private Node deleteRecursive(Node current, int value) {
+  private Node deleteRecursive(Node current, T smallestValue2) {
     if (current == null) {
         return null;
     }
 
-    if (value == current.getValue()) {
+    if (smallestValue2 == current.getValue()) {
     	if (current.getLeft() == null && current.getRight() == null) {
         return null;
     	}
@@ -130,17 +120,17 @@ public class BinaryTree {
         return current.getRight();
     }
     
-    int smallestValue = findSmallestValue(current.getRight());
+    T smallestValue = findSmallestValue(current.getRight());
     current.setValue(smallestValue);
     current.setRight(deleteRecursive(current.getRight(), smallestValue));
     return current;
     } 
     
-    if (value < current.getValue()) {
-        current.setLeft(deleteRecursive(current.getLeft(), value));
+    if (smallestValue2 < current.getValue()) {
+        current.setLeft(deleteRecursive(current.getLeft(), smallestValue2));
         return current;
     }
-    current.setRight(deleteRecursive(current.getRight(), value));
+    current.setRight(deleteRecursive(current.getRight(), smallestValue2));
     return current;
 }
   
@@ -162,7 +152,7 @@ public class BinaryTree {
   	return node;
   }
   
-  public int getMeanValue()
+  public T getMeanValue()
   {
   	if (null == this.sortedValues)
   		this.sortedValues = getSortedValues();
@@ -199,18 +189,20 @@ public class BinaryTree {
   	return ret;
   }
   
+  public static <T extends Comparable<T>> int compare(T value, T object){
+		return value.compareTo(object);
+	}
 
-	public static void main(String[] args) throws JAXBException
+	public static void main(String[] args) 
   {
   	
-  	BinaryTree bt = BinaryTree.fromXml("./indexOnSerialId.xml");
+  	BinaryTree bt = BinaryTree.fromJson("./indexOnSerialId.json");
   	System.out.println(bt);
   	
   	BinaryTree balanced = BinaryTree.rebalanceTree(bt);
   	
   	BinaryTree.traverseInOrder(balanced.root);
   	
-  	//balanced.saveXml("balanced.xml");
   	balanced.saveJson("balanced.json");
   	
   	

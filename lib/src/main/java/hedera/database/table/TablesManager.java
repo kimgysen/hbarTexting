@@ -1,4 +1,4 @@
-package hedera.database;
+package hedera.database.table;
 
 import com.hedera.hashgraph.sdk.*;
 import io.github.cdimascio.dotenv.Dotenv;

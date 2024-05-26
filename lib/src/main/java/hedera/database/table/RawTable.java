@@ -1,4 +1,4 @@
-package hedera.database;
+package hedera.database.table;
 
 import java.io.IOException;
 import java.util.ArrayList;

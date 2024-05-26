@@ -120,16 +120,17 @@ public class AccountsManager {
         
         //createNewAccount(client, "CLIENT2");
         
-        createNewAccount(client, "CLIENT3");
+        createNewAccount(client, "CLIENT5");
         
-        AccountId targetAccountId = AccountId.fromString(Dotenv.load().get("CLIENT3_ACCOUNT_ID"));
+        /*
+        AccountId targetAccountId = AccountId.fromString(Dotenv.load().get("CLIENT4_ACCOUNT_ID"));
         
         checkBalance(client, targetAccountId);
         
         fundAccount(client, myAccountId, targetAccountId, 10);
         
         checkBalance(client, targetAccountId);
-		
+			*/
 	}
 	
 }

@@ -1,4 +1,4 @@
-package hedera.database;
+package hedera.database.table;
 
 import java.io.IOException;
 import java.util.List;
@@ -14,6 +14,7 @@ public class TransactionTable extends RawTable {
 	public String[] buyer;
 	public int[] 		serialid;
 	public double[] price;
+	public int[] sequence_number;
 
 	public TransactionTable() throws IOException {
 		super();
@@ -23,6 +24,7 @@ public class TransactionTable extends RawTable {
 		buyer 		= 	new String[recordsNumber];
 		serialid 	= 	new int[recordsNumber];
 		price 		= 	new double[recordsNumber];
+		sequence_number = new int[recordsNumber];
 		
 		for (int i=1; i<recordsNumber; i++)
 		{
@@ -31,7 +33,8 @@ public class TransactionTable extends RawTable {
 			seller[i] = fields[0];
 			buyer[i]  = fields[1];
 			serialid[i] = Integer.valueOf(fields[2].strip());
-			price[i]    = Double.valueOf(fields[3].strip());			
+			price[i]    = Double.valueOf(fields[3].strip());
+			sequence_number[i] = i;
 		}
 	}
 
@@ -48,7 +51,7 @@ public class TransactionTable extends RawTable {
 		IndexOnSerialid.saveJson("indexOnSerialId.json");
 		IndexOnSerialid.saveXml("indexOnSerialId.xml");
 		
-  	BinaryTree.traverseInOrder(IndexOnSerialid.getRoot());
+		IndexOnSerialid.traverseInOrder(IndexOnSerialid.getRoot());
 
 		
 	}

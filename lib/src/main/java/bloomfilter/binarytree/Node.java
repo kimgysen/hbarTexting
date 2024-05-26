@@ -38,7 +38,6 @@ public class Node {
         this.value = data;
     }
 
-    @XmlElement
     public Node getLeft() {
         return left;
     }
@@ -47,7 +46,7 @@ public class Node {
         this.left = left;
     }
 
-    @XmlElement
+
     public Node getRight() {
         return right;
     }
@@ -119,7 +118,12 @@ public class Node {
       }
     }
 
-     
+    
+    public String toString()
+    {
+    	return ""+this.getValue();
+    }
+    
     public static void main(String[] args) throws JAXBException {
 
     	Node n = fromXml("BinaryTree.xml");
