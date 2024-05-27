@@ -5,18 +5,26 @@ import java.util.List;
 
 
 
-public class BinaryTree<T> {
+public class BinaryTree<T extends Comparable<? super T>> {
 
   private Node root = new Node();
   
   private List<T> sortedValues;
   
-  public Node getRoot()
+  public BinaryTree(T value) {
+  	root.setValue(value);
+  }
+
+	public BinaryTree(Node root_) {
+		this.setRoot(root_);
+	}
+
+	public Node<T> getRoot()
   {
   	return this.root;
   }
 
-  private void setRoot(Node node) {
+  private void setRoot(Node<T> node) {
 		this.root = node;
 	}
 
@@ -39,16 +47,16 @@ public class BinaryTree<T> {
  }
 
   
-  private Node addRecursive(Node current, T value) {
+  private Node<T> addRecursive(Node<T> current, T value) {
     if (current == null) {
-    	  Node n = new Node();
+    	  Node<T> n = new Node<T>();
     		n.setValue(value);
         return n;
     }
 
-    if (compare(value, current.getValue())<0) {
+    if ( compare(value, current.getValue()) < 0 ) {
         current.setLeft(addRecursive(current.getLeft(), value));
-    } else if (value.compareTo(current.getValue())>0) {
+    } else if ( compare(value, current.getValue()) >0) {
         current.setRight(addRecursive(current.getRight(), value));
     } else {
         return current;
@@ -57,7 +65,7 @@ public class BinaryTree<T> {
     return current;
   }
   
-  public void add(int value) {
+  public void add(T value) {
     root = addRecursive(root, value);
   }
   
@@ -66,8 +74,6 @@ public class BinaryTree<T> {
   	root.saveJson(fileName);
   }
    
-
-
   
   private boolean containsNodeRecursive(Node current, T value) {
     if (current == null) {
@@ -76,21 +82,19 @@ public class BinaryTree<T> {
     if (value == current.getValue()) {
         return true;
     } 
-    return value < current.getValue()
+    return ( compare(value, current.getValue()) < 0 )
       ? containsNodeRecursive(current.getLeft(), value)
       : containsNodeRecursive(current.getRight(), value);
   }
   
-  public boolean containsNode(int value) {
+  public boolean containsNode(T value) {
     return containsNodeRecursive(root, value);
   }
   
 
   public static BinaryTree fromJson(String fileName) 
   {
-  	BinaryTree bt = new BinaryTree();
-  	bt.root = Node.fromJson(fileName);
-  	return bt;
+  	return new BinaryTree(Node.fromJson(fileName));
   }
 
   
@@ -98,11 +102,11 @@ public class BinaryTree<T> {
     return root.getLeft() == null ? (T) root.getValue() : findSmallestValue(root.getLeft());
   }
   
-  public void delete(int value) {
+  public void delete(T value) {
     root = deleteRecursive(root, value);
   }
   
-  private Node deleteRecursive(Node current, T smallestValue2) {
+  private Node<T> deleteRecursive(Node<T> current, T smallestValue2) {
     if (current == null) {
         return null;
     }
@@ -126,7 +130,7 @@ public class BinaryTree<T> {
     return current;
     } 
     
-    if (smallestValue2 < current.getValue()) {
+    if ( compare(smallestValue2, current.getValue()) < 0) {
         current.setLeft(deleteRecursive(current.getLeft(), smallestValue2));
         return current;
     }
@@ -142,9 +146,9 @@ public class BinaryTree<T> {
     }
   }
     
-  public Node getLeftMostNode()
+  public Node<T> getLeftMostNode()
   {
-  	Node node = this.root;
+  	Node<T> node = this.root;
   	
   	while (null != node.getLeft())
   		node = node.getLeft();
@@ -159,7 +163,7 @@ public class BinaryTree<T> {
   	return this.sortedValues.get(this.sortedValues.size()/2);
   }
   
-  public static Node rebalanceTreeNodes(int[] nums, int start, int end) {
+  public static Node<Integer> rebalanceTreeNodes(int[] nums, int start, int end) {
     if (start > end) {
         return null;
     }
@@ -168,7 +172,7 @@ public class BinaryTree<T> {
     int mid = (end + start) / 2;
 
     // Create a new TreeNode with the middle element as the root
-    Node root = new Node(nums[mid]);
+    Node<Integer> root = new Node<Integer>(nums[mid]);
 
     // Recursively build the left and right subtrees
     root.setLeft(rebalanceTreeNodes(nums, start, mid - 1));
@@ -177,20 +181,18 @@ public class BinaryTree<T> {
     return root;
   }  
   
-  public static BinaryTree rebalanceTree(BinaryTree bt)
+  public static BinaryTree rebalanceTree(BinaryTree<Integer> bt)
   {
   	List<Integer> list = bt.getSortedValues(); 
   	int[] nums = list.stream().mapToInt(i -> i).toArray();
   	Node root = rebalanceTreeNodes(nums, 0, nums.length-1);
-  	BinaryTree ret = new BinaryTree();
-  	
-  	ret.setRoot(root);
+  	BinaryTree ret = new BinaryTree(root);
   	
   	return ret;
   }
   
-  public static <T extends Comparable<T>> int compare(T value, T object){
-		return value.compareTo(object);
+  public static <T> int compare(T value, T object){
+		return ((Comparable<? super T>) value).compareTo(object);
 	}
 
 	public static void main(String[] args) 
@@ -204,7 +206,6 @@ public class BinaryTree<T> {
   	BinaryTree.traverseInOrder(balanced.root);
   	
   	balanced.saveJson("balanced.json");
-  	
   	
   }
   

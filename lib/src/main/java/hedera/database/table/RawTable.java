@@ -15,12 +15,14 @@ public class RawTable {
 	private TopicId myDbTopicId = null;
 	private List<Message> messages = null;
 	private List<String> rawRecords = null;
+	private List<Integer> sequence_numbers = null;
 	
 	public RawTable() throws IOException
 	{
 		myDbTopicId = TopicId.fromString(Dotenv.load().get("MY_DB_TOPIC_ID"));
 		messages = getAllMessages();
 		buildRawrecords();
+		buildSequenceNumbers();
 	}
 	
 	public RawTable(String topicId) throws IOException
@@ -28,6 +30,7 @@ public class RawTable {
 		myDbTopicId = TopicId.fromString(topicId);
 		messages = getAllMessages();
 		buildRawrecords();
+		buildSequenceNumbers();
 	}
 	
 	public void buildRawrecords()
@@ -37,10 +40,23 @@ public class RawTable {
 			rawRecords.add(m.getMessage());
 	}
 	
+	public void buildSequenceNumbers()
+	{
+		sequence_numbers = new ArrayList<Integer>();
+		for (Message m:messages)
+			sequence_numbers.add(m.getSequence_number());
+	}
+	
 	protected List<String> getRawRecords() {
 		
 		return this.rawRecords;
 	}
+
+	protected List<Integer> getSequenceNumbers() {
+		
+		return this.sequence_numbers;
+	}
+
 	
 	public List<Message> getAllMessages() throws IOException
 	{
@@ -65,8 +81,7 @@ public class RawTable {
 		
 		RawTable q = new RawTable();
 		
-	
-		System.out.println(q.messages.get(0));
+		System.out.println(q.sequence_numbers.get(0));
 		
 	}
 
