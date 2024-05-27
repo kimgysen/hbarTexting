@@ -9,7 +9,10 @@ public class IndexNode<T> {
     private int sequence_number;
     private IndexNode left;
     private IndexNode right;
-
+    
+    public IndexNode(){
+    }
+    
 		public IndexNode(T v, int sequence_number_) {
 			this.value = v;
 			this.sequence_number = sequence_number_;
@@ -70,7 +73,7 @@ public class IndexNode<T> {
     }
 
     public static void main(String[] args) {
-    		IndexNode n = IndexNode.fromJson("BinaryTree.json");
+    		IndexNode n = IndexNode.fromJson("./indexOnBuyer.json");
         System.out.println(n);
     }
 }
