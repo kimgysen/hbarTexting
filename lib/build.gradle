@@ -6,10 +6,7 @@
  * User Manual available at https://docs.gradle.org/7.4.2/userguide/building_java_projects.html
  */
 
-plugins {
-    // Apply the java-library plugin for API and implementation separation.
-    id 'java-library'
-}
+apply plugin:'java-library'
 
 repositories {
     // Use Maven Central for resolving dependencies.
@@ -18,15 +15,17 @@ repositories {
 
 dependencies {
     // hedera dependencies
-    implementation 'com.hedera.hashgraph:sdk:2.5.0'
+    implementation 'com.hedera.hashgraph:sdk:2.32.0'
+    implementation 'io.grpc:grpc-netty-shaded:1.57.2'
+
     
-    implementation 'io.grpc:grpc-netty-shaded:1.40.0'
     // Module that stores your environment variables from a .env file
-    implementation 'io.github.cdimascio:java-dotenv:5.2.1' 
-    
-    implementation 'org.slf4j:slf4j-nop:1.7.29'
-    
+    implementation 'io.github.cdimascio:dotenv-java:2.3.2'
+    implementation 'org.slf4j:slf4j-nop:2.0.9'
     implementation 'com.google.code.gson:gson:2.8.8'
+    
+    
+    
     // Use JUnit Jupiter for testing.
     testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
 
@@ -53,9 +52,34 @@ dependencies {
    
     implementation 'joda-time:joda-time:2.10.14'
     
+    //implementation group: 'com.jtransc', name: 'jtransc-rt', version: '0.6.6'
+    
+    // jakarta + moxy + glassfish
+    implementation 'jakarta.platform:jakarta.jakartaee-api:9.0.0'
+    implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.2'
+    implementation 'org.eclipse.persistence:org.eclipse.persistence.moxy:3.0.2'
+ 
+    // Include the Jakarta JSON API
+    implementation 'jakarta.json:jakarta.json-api:2.0.0'
+    implementation 'org.eclipse.parsson:parsson:1.1.1'
+    
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
+ 
+ 	// lombok
+ 	compileOnly 'org.projectlombok:lombok:1.18.32'
+	annotationProcessor 'org.projectlombok:lombok:1.18.32'
+	testCompileOnly 'org.projectlombok:lombok:1.18.32'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.32'
+
+    // Appache commons math4
+        
+    implementation group: 'org.apache.commons', name: 'commons-math4-core', version: '4.0-beta1'
+    implementation group: 'org.apache.commons', name: 'commons-math4-legacy', version: '4.0-beta1'
+   
+	// Junit
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
+    
+    
 }
 
-tasks.named('test') {
-    // Use JUnit Platform for unit tests.
-    useJUnitPlatform()
-}
